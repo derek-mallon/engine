@@ -30,3 +30,17 @@ char* read_file(char* path){
     fclose(file);
     return line;
 }
+Hashtable parse_data(char* path){
+    Hashtable hashtable;
+    char* file = read_file(path);
+    char* check = file;
+    int i = 0;
+    while(*check != '\0'){
+        i++;
+        if(*check == '\n'){
+            
+        }
+        check++;
+    }
+    return hashtable;
+}
