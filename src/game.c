@@ -7,7 +7,6 @@
 #include <hashtable.h>
 #include "util.h"
 #define MAX_TEXTURES 10
-typedef enum {false,true} bool;
 const uint32_t UPDATE_TIME_STEP_MS;
 const SDL_Color BLACK= {0,0,0,0};
 const uint8_t DEFAULT_FONT_SIZE;
@@ -90,11 +89,15 @@ void render_system_destroy(struct RenderSystem* render_system){
     SDL_DestroyRenderer(render_system->renderer);
 }
 int main(){
-    char* test = read_file("log.txt");
-    printf("%s",test);
-    free(test);
-    LOG("NEW GAME");
-    Hashtable test_data = parse_data("test.data");
+    size_t count;
+    char* str = read_file("test.data");
+    char** test_str = strsplit(str,",{} \n",&count);
+    int i;
+    for(i=0;i<count;i++){
+        printf("%s\n",test_str[i]);
+    }
+    free(test_str);
+    /*
     struct SdlSystem sdl_system =  sdl_system_create(1600,1000,"engine");
     SDL_Event event;
     bool running = true;
@@ -112,5 +115,6 @@ int main(){
             }
         }
     }
+    */
     return 0;
 }

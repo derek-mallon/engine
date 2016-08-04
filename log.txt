@@ -1,0 +1,42 @@
+Wed Aug  3 21:12:05 2016
+=>util.c: log at line 22: file to be read not found 
+Wed Aug  3 21:12:05 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:13:02 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:14:58 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:16:18 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:17:20 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:17:54 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:19:01 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:20:49 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:26:09 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:29:33 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:29:57 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:31:23 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:31:42 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:31:58 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:32:39 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 21:33:48 2016
+=>game.c: log at line 95: NEW GAME 
+Wed Aug  3 22:00:53 2016
+=>util.c: log at line 22: file to be read not found 
+Wed Aug  3 22:00:55 2016
+=>util.c: log at line 22: file to be read not found 
+Wed Aug  3 22:01:19 2016
+=>util.c: log at line 22: file to be read not found 
+Wed Aug  3 22:02:06 2016
+=>util.c: log at line 22: file to be read not found 
