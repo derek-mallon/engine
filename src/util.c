@@ -31,15 +31,6 @@ char* read_file(char* path){
     fclose(file);
     return line;
 }
-struct Frame{
-    uint16_t x;
-    uint16_t y;
-    uint16_t width;
-    uint16_t height;
-};
-struct Sprite{
-     struct Frame* frames;
-};
 enum ParseState{
     READ_TYPE,
     READ_VALUE,

@@ -4,6 +4,8 @@
 #include <hashtable.h>
 #define LOG(content) log_func((content),__LINE__,__FILE__)
 #define LOG_PATH "log.txt"
+#define  MAX_TEXTURES 10 
+#define DEFAULT_FONT_SIZE 20
 typedef enum {false,true} bool;
 void append_to_file(char* file_name,char* content);
 void log_func(char* content,uint16_t line,char* file);
