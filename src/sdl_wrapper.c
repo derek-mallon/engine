@@ -3,7 +3,7 @@
 #include <SDL2/Sdl_image.h>
 #include <SDL2/Sdl_ttf.h>
 struct SdlSystem sdl_system_create(uint16_t screen_width,uint16_t screen_height,char* title){
-    if(SDL_Init(SDL_INIT_VIDEO) < 0){
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0){
         LOG("could not init SDL2");
     }
     if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)){

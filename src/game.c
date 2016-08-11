@@ -8,10 +8,12 @@
 #include "util.h"
 #include "sdl_wrapper.h"
 #include "render_system.h"
+#include "game_info.h"
 //Adds text to the beginning of a file, the file doesn't exist create it.
 int main(){
     struct SdlSystem sdl_system =  sdl_system_create(1600,1000,"engine");
     struct RenderSystem render_system = render_system_create(sdl_system.window);
+    struct GameInfo game_info = game_info_create(sdl_system.window);
     SDL_Event event;
     bool running = true;
     while(running){
@@ -27,6 +29,12 @@ int main(){
                 }
             }
         }
+        int x,y;
+        SDL_GetMouseState(&x,&y);
+        char buf[100];
+        sprintf(buf,"%f,%f",x/game_info.unitX + game_info.offSetX,y/game_info.unitY + game_info.offSetY);
+        SDL_SetWindowTitle(sdl_system.window,buf);
+        game_info_update(&game_info);
     }
     render_system_destroy(&render_system);
     sdl_system_destroy(&sdl_system);
