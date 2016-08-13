@@ -10,6 +10,7 @@ struct RenderSystem{
     size_t textureCounter;
 };
 struct RenderSystem render_system_create(SDL_Window* window);
+void render_system_update(struct RenderSystem* render_system);
 bool render_system_add_texture(struct RenderSystem* render_system,SDL_Texture* texture);
 void render_system_destroy(struct RenderSystem* render_system);
 #endif

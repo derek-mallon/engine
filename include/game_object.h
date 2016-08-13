@@ -16,4 +16,7 @@ struct GameObject{
     struct Sprite sprite;
     struct XY postion;
 };
+struct GameObjectManager{
+    struct GameObject* gameObjects;
+};
 #endif
