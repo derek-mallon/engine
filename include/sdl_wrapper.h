@@ -2,9 +2,9 @@
 #define SDL_WRAPPER_H
 #include <SDL2/Sdl.h>
 #include <stdint.h>
-struct SdlSystem{
+typedef struct SS{
     SDL_Window* window;
-};
-struct SdlSystem sdl_system_create(uint16_t screen_width,uint16_t screen_height,char* title);
-void sdl_system_destroy(struct SdlSystem* sdl_system);
+}SS;
+SS SS_create(uint16_t screen_width,uint16_t screen_height,char* title);
+void SS_destroy(SS* sdl_system);
 #endif

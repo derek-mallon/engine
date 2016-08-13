@@ -3,8 +3,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
-void append_to_file(char* file_name,char* content){
-    FILE* file = fopen(file_name,"a+");
+#include <SDL2/Sdl_ttf.h>
+const SDL_Color BLACK= {0,0,0,0};
+void append_to_file(char* file_name,char* content){ FILE* file = fopen(file_name,"a+");
     fputs(content,file);
     fputs("\n",file);
     fclose(file);
@@ -79,6 +80,26 @@ char** strsplit(char* buf,char* delim,size_t* number){
     *number = count;
     return result;
 }
+bool load_texture_from_image(SDL_Renderer* renderer,char* path,SDL_Texture* texture){
+    SDL_Surface* image_surface = IMG_Load(path);
+    texture =  SDL_CreateTextureFromSurface(renderer,image_surface);
+    if(image_surface == NULL){
+        LOG("texture image not found");
+        return false;
+    }
+    return true;
+}
+bool load_texture_from_font(SDL_Renderer* renderer,char* path,SDL_Texture* texture){
+    TTF_Font* font = TTF_OpenFont(path,DEFAULT_FONT_SIZE);
+    SDL_Surface* text_surface =  TTF_RenderText_Solid(font,"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",BLACK);
+    if(text_surface == NULL){
+        LOG("font not found");
+        return false;
+    }
+    texture = SDL_CreateTextureFromSurface(renderer,text_surface);
+    SDL_FreeSurface(text_surface);
+    return true;
+};
 /*
 void* parse_data(char* path){
     char* file = read_file(path);
