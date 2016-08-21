@@ -1,8 +1,6 @@
-
+#include "sdl_wrapper.h"
 #include <SDL2/Sdl.h>
 #include <SDL2/Sdl_image.h>
-#include <stdint.h>
-typedef enum {false,true} bool;
 typedef struct sdl_data{
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -20,46 +18,17 @@ typedef struct sdl_data{
     bool running;
 }sdl_data;
 
-sdl_data data;
+static sdl_data data;
 
-typedef struct vec2{
-    float x;
-    float y;
-}vec2;
 vec2 create_vec2(float x,float y){
     vec2 vec = {x,y};
     return vec;
 }
-const size_t EVENT_BUFF_SIZE = 10;
 const float IDEAL_WIDTH = 16;
 const float IDEAL_HEIGHT = 10;
 const float IDEAL_UNIT_X = 100;
 const float IDEAL_UNIT_Y = 100;
 
-typedef struct sdl_layer_output{
-    SDL_Event current_event_buff[EVENT_BUFF_SIZE];
-    size_t event_buff_size;
-    uint64_t deltaTime;
-    int mouse_x;
-    int mouse_y;
-}sdl_layer_output;
-typedef struct frame{
-    uint16_t x;
-    uint16_t y;
-    uint16_t width;
-    uint16_t height;
-}frame;
-typedef enum sprite_flip{
-    SF_NONE,
-    SF_HORTIZONATAL,
-    SF_VERTICAL,
-}sprite_flip;
-typedef struct animation{
-    frame* frames;
-    size_t number_of_frames;
-    size_t current_frame;
-    size_t texture_index;
-}animation;
 animation create_animation_from_strip(size_t texture_index,uint16_t number_of_frames,uint16_t sprite_width,uint16_t sprite_height,uint16_t x_offset,uint16_t y_offset){
     int i= 0;
     animation output;
@@ -75,28 +44,6 @@ animation create_animation_from_strip(size_t texture_index,uint16_t number_of_fr
 };
 void destroy_animation(animation* animation){
     free(animation->frames);
-}
-typedef struct sprite{
-    size_t texture_index;
-    double angle;
-    animation* animations;
-    size_t current_animation;
-    vec2 rotation_point;
-    sprite_flip flip;
-}sprite;
-sprite create_sprite(animation* animations){
-    int i= 0;
-    sprite output;
-    output.animations = animations;
-    output.current_animation = 0;
-    output.angle = 0.0;
-    vec2 rotation_point = {0,0};
-    output.rotation_point = rotation_point;
-    output.flip = SF_NONE;
-    return output;
-}
-void destroy_sprite(sprite* sprite){
-    free(sprite->animations);
 }
 bool load_texture_from_image(char* path,SDL_Texture** texture){
     SDL_Surface* image_surface = IMG_Load(path);
@@ -187,11 +134,19 @@ float pixel_y_to_units(int pixel_y){
 int units_x_to_pixel(float units_x){
     return (units_x + data.offset_x)* data.unit_x;
 }
+int units_x_scalar_to_pixel(float units_x){
+    return units_x * data.unit_x;
+}
+int units_y_scalar_to_pixel(float units_y){
+    return units_y * data.unit_y;
+}
 int units_y_to_pixel(float units_y){
     return (units_y + data.offset_y)* data.unit_y;
 }
 void render_clear(){
+    SDL_Delay(100);
     SDL_RenderPresent(data.renderer);
+    SDL_SetRenderDrawColor(data.renderer,0,0,0,0xFF);
     SDL_RenderClear(data.renderer);
 }
 void render_texture(size_t texture_index,vec2 pos){
@@ -201,105 +156,29 @@ void render_texture(size_t texture_index,vec2 pos){
     SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width/2),(units_y_to_pixel(pos.y)-height/2),width,height};
     SDL_RenderCopy(data.renderer,data.textures[texture_index],NULL,&pos_rect);
 }
-void render_sprite(sprite* sprite,vec2 pos){
-    size_t current_animation = sprite->current_animation;
-    animation* animation = &sprite->animations[sprite->current_animation];
-    frame current_frame = animation->frames[animation->current_frame];
+void render_frame(size_t texture_index,frame current_frame,vec2 pos,vec2 given_rotation_point,double angle,flip flip){
     SDL_Rect source_rect = {current_frame.x,current_frame.y,current_frame.width,current_frame.height};
     SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-current_frame.width/2),(units_y_to_pixel(pos.y)-current_frame.height/2),current_frame.width,current_frame.height};
-    SDL_Point rotation_point = {sprite->rotation_point.x,sprite->rotation_point.y};
-    SDL_RenderCopyEx(data.renderer,data.textures[sprite->texture_index],&source_rect,&pos_rect,sprite->angle,&rotation_point,sprite->flip);
-    if(animation->current_frame < animation->number_of_frames-1){
-        animation->current_frame++;
-    }else{
-        animation->current_frame = 0;
-    }
+    SDL_Point rotation_point = {given_rotation_point.x,given_rotation_point.y};
+    SDL_RenderCopyEx(data.renderer,data.textures[texture_index],&source_rect,&pos_rect,angle,&rotation_point,(SDL_RendererFlip)flip);
 }
-typedef enum sprite_state{
-    WALKING_NORTH,
-    WALKING_EAST,
-    WALKING_SOUTH,
-    WALKING_WEST,
-    STANDING_NORTH,
-    STANDING_EAST,
-    STANDING_SOUTH,
-    STANDING_WEST,
-}sprite_state;
-int main(){
-    char* paths[1];
-    paths[0] = "testsheet.png";
-    init_sdl("test",1600,1000,paths,1);
-    vec2 pos;
-    animation* animations = malloc(sizeof(animation)*8);
-    animations[WALKING_EAST] = create_animation_from_strip(0,10,120,130,0,910);
-    animations[WALKING_NORTH] = create_animation_from_strip(0,10,120,130,0,780);
-    animations[WALKING_WEST] = create_animation_from_strip(0,10,120,130,0,650);
-    animations[WALKING_SOUTH] = create_animation_from_strip(0,10,120,130,0,520);
-    animations[STANDING_EAST] = create_animation_from_strip(0,3,120,130,0,390);
-    animations[STANDING_NORTH] = create_animation_from_strip(0,1,120,130,0,260);
-    animations[STANDING_WEST] = create_animation_from_strip(0,3,120,130,0,130);
-    animations[STANDING_SOUTH] = create_animation_from_strip(0,3,120,130,0,0);
-    sprite test_sprite = create_sprite(animations);
-    sdl_layer_output output= input_loop();
-    pos = create_vec2(0,0);
-    sprite_state current_state;
-    while(data.running){
-        //INPUT
-        output= input_loop();
-        int i=0;
-        for(i=0;i<output.event_buff_size;i++){
-            switch(output.current_event_buff[i].type){
-                case SDL_KEYDOWN:
-                    switch(output.current_event_buff[i].key.keysym.sym){
-                        case SDLK_w:
-                            current_state = WALKING_NORTH;
-                            break;
-                        case SDLK_d:
-                            current_state = WALKING_EAST;
-                            break;
-                        case SDLK_s:
-                            current_state = WALKING_SOUTH;
-                            break;
-                        case SDLK_a:
-                            current_state = WALKING_WEST;
-                            break;
-                    }
-                    break;
-            }
-        }
+color create_color(float r,float g,float  b,float a){
+    color color = {r,g,b,a};
+    return color;
+}
+bool get_running(){
 
-        //LOGIC
-        test_sprite.current_animation = current_state;
-        switch(current_state) {
-            case WALKING_NORTH:
-                current_state = STANDING_NORTH;
-                break;
-            case WALKING_EAST:
-                current_state = STANDING_EAST;
-                break;
-            case WALKING_SOUTH:
-                current_state = STANDING_SOUTH;
-                break;
-            case WALKING_WEST:
-                current_state = STANDING_WEST;
-                break;
-            case STANDING_NORTH:
-                break;
-            case STANDING_EAST:
-                break;
-            case STANDING_SOUTH:
-                break;
-            case STANDING_WEST:
-                break;
-        }
-        //RENDER
-        char buff[256];
-        sprintf(buff,"%f,%f",pixel_x_to_units(output.mouse_x),pixel_y_to_units(output.mouse_y));
-        SDL_SetWindowTitle(data.window,buff);
-        render_sprite(&test_sprite,pos);
-        render_clear();
-        SDL_Delay(100);
-    }
-    destroy_sprite(&test_sprite);
-    quit();
+    return data.running;
+}
+void render_rect_outline(vec2 pos,vec2 dim,color color){
+    int width = units_x_scalar_to_pixel(dim.x);
+    int height = units_y_scalar_to_pixel(dim.y);
+    SDL_Rect rect = {units_x_to_pixel(pos.x)-width/2,units_y_to_pixel(pos.y)-height/2,width,height};
+    SDL_SetRenderDrawColor(data.renderer,color.r*255,color.g*255,color.b*255,color.a*255);
+    SDL_RenderDrawRect(data.renderer,&rect);
+}
+vec2 scaler_multi(vec2 vec,float scaler){
+    vec.x *= scaler;
+    vec.y *= scaler;
+    return vec;
 }
