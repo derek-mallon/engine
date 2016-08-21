@@ -80,15 +80,6 @@ char** strsplit(char* buf,char* delim,size_t* number){
     *number = count;
     return result;
 }
-bool load_texture_from_image(SDL_Renderer* renderer,char* path,SDL_Texture* texture){
-    SDL_Surface* image_surface = IMG_Load(path);
-    texture =  SDL_CreateTextureFromSurface(renderer,image_surface);
-    if(image_surface == NULL){
-        LOG("texture image not found");
-        return false;
-    }
-    return true;
-}
 bool load_texture_from_font(SDL_Renderer* renderer,char* path,SDL_Texture* texture){
     TTF_Font* font = TTF_OpenFont(path,DEFAULT_FONT_SIZE);
     SDL_Surface* text_surface =  TTF_RenderText_Solid(font,"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",BLACK);
