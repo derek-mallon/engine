@@ -74,4 +74,10 @@ void render_rect_outline(vec2 pos,vec2 dim,color color);
 vec2 scaler_multi(vec2 vec,float scaler);
 
 void render_circle(vec2 pos,float radius,color color);
+
+void update_timing();
+
+uint32_t get_delta_time();
+
+float get_fps();
 #endif

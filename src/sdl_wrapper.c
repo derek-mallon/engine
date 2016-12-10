@@ -1,5 +1,6 @@
 #include "sdl_wrapper.h"
 #include <SDL2/SDL_image.h>
+#define DELTA_SAMPLE_SIZE 60
 typedef struct sdl_data{
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -15,6 +16,11 @@ typedef struct sdl_data{
     float offset_x;
     float offset_y;
     bool running;
+    uint32_t prev_tick;
+    uint32_t delta_time;
+    uint32_t delta_time_data[DELTA_SAMPLE_SIZE];
+    uint16_t delta_collection_count;
+    float current_fps;
 }sdl_data;
 
 static sdl_data data;
@@ -86,7 +92,7 @@ void init_sdl(char* title,uint16_t screen_width,uint16_t screen_height,char** te
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't init SDL_image: %s",SDL_GetError());
         quit();
     }
-    data.renderer = SDL_CreateRenderer(data.window,-1,SDL_RENDERER_ACCELERATED);
+    data.renderer = SDL_CreateRenderer(data.window,-1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if(!data.renderer){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't create a renderer: %s",SDL_GetError());
         quit();
@@ -107,6 +113,13 @@ void init_sdl(char* title,uint16_t screen_width,uint16_t screen_height,char** te
     data.offset_x =  (IDEAL_WIDTH/2);
     data.offset_y =  -(IDEAL_HEIGHT/2);
     data.running = true;
+    data.delta_time = 1;
+    for(i=0;i<DELTA_SAMPLE_SIZE;i++){
+        data.delta_time_data[i] = 1;
+    }
+    data.delta_collection_count = 0;
+    data.current_fps = 0;
+    data.prev_tick = SDL_GetTicks();
     SDL_RenderSetScale(data.renderer,data.scale_x,data.scale_y);
 }
 sdl_layer_output input_loop(){
@@ -144,7 +157,6 @@ int units_y_to_pixel(float units_y){
     return (units_y + data.offset_y)* data.unit_y;
 }
 void render_clear(){
-    SDL_Delay(100);
     SDL_RenderPresent(data.renderer);
     SDL_SetRenderDrawColor(data.renderer,0,0,0,0xFF);
     SDL_RenderClear(data.renderer);
@@ -187,4 +199,32 @@ vec2 scaler_multi(vec2 vec,float scaler){
     vec.x *= scaler;
     vec.y *= scaler;
     return vec;
+}
+void update_timing(){
+    uint32_t current_tick = SDL_GetTicks();
+    data.delta_time = current_tick - data.prev_tick;
+
+    if(data.delta_collection_count >= DELTA_SAMPLE_SIZE){
+        int i;
+        uint32_t sum = 0;
+        for(i=0;i<DELTA_SAMPLE_SIZE;i++)
+            sum += data.delta_time_data[i];
+        data.current_fps = (1/(((float)sum)/DELTA_SAMPLE_SIZE))*1000;
+        printf("---------- \n");
+        printf("delta %u \n",data.delta_time);
+        printf("fps %f \n",data.current_fps);
+        data.delta_collection_count = 0;
+    }else{
+        data.delta_time_data[data.delta_collection_count] = data.delta_time;
+    }
+
+    data.prev_tick = current_tick;
+    data.delta_collection_count++;
+}
+uint32_t get_delta_time(){
+    return data.delta_time;
+}
+
+float get_fps(){
+    return data.current_fps;
 }

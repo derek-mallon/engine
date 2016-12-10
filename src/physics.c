@@ -62,6 +62,7 @@ void init_physics(){
     data.current_collisions = ARRAY_CREATE(physics_collision,10);
 }
 
+
 void clean_physics(){
     int i;
     for(i=0;i<data.layers.size;i++){
@@ -103,24 +104,42 @@ phys_body_handle add_phys_body(float x,float y,float width,float height,uint8_t 
 }
 
 uint8_t free_phys_body(phys_body_handle handle){
-    if(handle.layer >= data.layers.size || data.layers.array[handle.layer].bodies.array.array[handle.index].alive == 0){
+    if(data.layers.array[handle.layer].bodies.array.array[handle.index].alive == 0){
         return 0;
     }
     POOL_FREE(phys_body,&data.layers.array[handle.layer].bodies,handle.index);
     return 1;
 }
 
+phys_body* get_phys_body(phys_body_handle handle){
+    if(data.layers.array[handle.layer].bodies.array.array[handle.index].alive == 0){
+        return NULL;
+    }
+    return &data.layers.array[handle.layer].bodies.array.array[handle.index].item;
+}
+
 void update_physics(){
    int i,iter1=0; 
+   //reset the current collisions
+   data.current_collisions.size = 0;
    for(i=0;i<data.layers.size;i++){
-       phys_body* next = NULL;
-       while((next = POOL_NEXT(phys_body,&data.layers.array[i].bodies,iter1))){
-
+       POOL_ITER(phys_body) iterator = POOL_ITER_CREATE(phys_body);
+       while(POOL_NEXT(phys_body,&data.layers.array[i].bodies,&iterator)){
+            POOL_ITER(phys_body) second_iterator = POOL_ITER_CREATE(phys_body);
+            while(POOL_NEXT(phys_body,&data.layers.array[i].bodies,&second_iterator)){
+                if(iterator.index != second_iterator.index){
+                    if(aabb(iterator.item->rect,second_iterator.item->rect)){
+                        phys_body_handle body1 = {i,iterator.index};
+                        phys_body_handle body2 = {i,second_iterator.index};
+                        physics_collision collision = {body1,body2};
+                        ARRAY_ADD(physics_collision,&data.current_collisions,collision);
+                    }
+                }
+            }
        }
    }
 }
 
-/*
 int main(){
     init_sdl("test",1600,1000,NULL,0);
     sdl_layer_output output;
@@ -130,9 +149,10 @@ int main(){
     vec2 pos2 = create_vec2(-4.1,1.2);
     float x = -4;
     while(get_running()){
-        x += 0.1;
-        rect2.center.x = x;
+        update_timing();
         output = input_loop();
+        x += 1 * (float)get_delta_time() * 0.001;
+        rect2.center.x = x;
         render_rect(rect1,red);
         if(aabb(rect1,rect2)){
             render_rect(rect2,green);
@@ -140,7 +160,6 @@ int main(){
             render_rect(rect2,blue);
         }
         render_clear();
-        update_physics();
+        //update_physics();
     }
 }
-*/
