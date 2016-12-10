@@ -11,10 +11,6 @@ sprite create_sprite(animation* animations,size_t number_of_animations){
     output.number_of_animations = number_of_animations;
     return output;
 }
-typedef struct rect{
-    vec2 pos; //top right corner
-    vec2 half_dim; //half the dim
-}rect;
 typedef struct phys_body{
     rect dimensions;
 }phys_body;

@@ -1,6 +1,5 @@
 #include "sdl_wrapper.h"
-#include <SDL2/Sdl.h>
-#include <SDL2/Sdl_image.h>
+#include <SDL2/SDL_image.h>
 typedef struct sdl_data{
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -24,6 +23,7 @@ vec2 create_vec2(float x,float y){
     vec2 vec = {x,y};
     return vec;
 }
+
 const float IDEAL_WIDTH = 16;
 const float IDEAL_HEIGHT = 10;
 const float IDEAL_UNIT_X = 100;
@@ -176,6 +176,12 @@ void render_rect_outline(vec2 pos,vec2 dim,color color){
     SDL_Rect rect = {units_x_to_pixel(pos.x)-width/2,units_y_to_pixel(pos.y)-height/2,width,height};
     SDL_SetRenderDrawColor(data.renderer,color.r*255,color.g*255,color.b*255,color.a*255);
     SDL_RenderDrawRect(data.renderer,&rect);
+}
+void render_circle(vec2 pos,float radius,color color){
+    SDL_RenderSetScale(data.renderer,1,1);
+    SDL_SetRenderDrawColor(data.renderer,color.r*255,color.g*255,color.b*255,color.a*255);
+    SDL_RenderDrawPoint(data.renderer,units_x_to_pixel(pos.x),units_y_to_pixel(pos.y));
+    SDL_RenderSetScale(data.renderer,data.scale_x,data.scale_y);
 }
 vec2 scaler_multi(vec2 vec,float scaler){
     vec.x *= scaler;

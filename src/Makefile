@@ -1,7 +1,7 @@
-CC= clang
+CmC= clang
 CFLAGS=-I../include
-CFLAGSDEBUG=-g -O3
-LIBS = -lSDL2 -lSDL2_image -lSDL2_ttf
+CFLAGSDEBUG=-g
+LIBS = -lSDL2 -lSDL2_image -lSDL2_ttf -lspatialhash -lgeometry
 DEPS = $(addprefix,../include/,$(wildcard *.h))
 SOURCE = $(addprefix,../src/,$(wildcard *.c))
 OBJS = $(addprefix ../build/release/,$(patsubst %.c,%.o,$(wildcard *.c)))

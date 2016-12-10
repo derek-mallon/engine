@@ -1,14 +1,9 @@
 #ifndef SDL_WRAPPER_H
 #define SDL_WRAPPER_H
-#include <SDL2/Sdl_events.h>
+#include <SDL2/Sdl.h>
 #include <stdint.h>
-typedef enum {false,true} bool;
-typedef struct vec2{
-    float x;
-    float y;
-}vec2;
-
-vec2 create_vec2(float x,float y);
+#include <stdbool.h>
+#include <geometry.h>
 
 #define EVENT_BUFF_SIZE 10
 
@@ -77,4 +72,6 @@ color create_color(float r,float g,float  b,float a);
 void render_rect_outline(vec2 pos,vec2 dim,color color);
 
 vec2 scaler_multi(vec2 vec,float scaler);
+
+void render_circle(vec2 pos,float radius,color color);
 #endif
