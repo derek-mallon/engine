@@ -7,6 +7,13 @@
 
 #define EVENT_BUFF_SIZE 10
 
+//frame flip
+typedef enum flip{
+    F_NONE,
+    F_HORTIZONATAL,
+    F_VERTICAL,
+}flip;
+
 //Contains all of the output information
 typedef struct sdl_layer_output{
     SDL_Event current_event_buff[EVENT_BUFF_SIZE];
@@ -16,30 +23,8 @@ typedef struct sdl_layer_output{
     int mouse_y;
 }sdl_layer_output;
 
-//Frame
-typedef struct frame{
-    uint16_t x,y,width,height;
-}frame;
 
-//Animation
-typedef struct animation{
-    frame* frames;
-    size_t number_of_frames;
-    size_t current_frame;
-    size_t texture_index;
-}animation;
 
-//Create an animation from frames in a straight line from the given cords
-animation create_animation_from_strip(size_t texture_index,uint16_t number_of_frames,uint16_t sprite_width,uint16_t sprite_height,uint16_t x_offset,uint16_t y_offset);
-
-void destroy_animation(animation* animation);
-
-//frame flip
-typedef enum flip{
-    F_NONE,
-    F_HORTIZONATAL,
-    F_VERTICAL,
-}flip;
 
 float pixel_x_to_units(int pixel_x);
 
@@ -54,7 +39,7 @@ void render_clear();
 void render_texture(size_t texture_index,vec2 pos);
 
 //NOTE rotation point is in pixels relative to the frame
-void render_frame(size_t texture_index,frame frame,vec2 pos,vec2 rotation_point,double angle,flip flip);
+void render_frame(size_t texture_index,uint16_t x,uint16_t y,uint16_t width,uint16_t height,vec2 pos,vec2 given_rotation_point,double angle,flip flip);
 
 void init_sdl(char* title,uint16_t screen_width,uint16_t screen_height,char** texture_paths,size_t number_of_textures);
 sdl_layer_output input_loop();

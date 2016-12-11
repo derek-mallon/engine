@@ -7,8 +7,8 @@ typedef struct sdl_data{
     SDL_Texture** textures;
     size_t number_of_textures;
     SDL_Event event;
-    uint16_t screen_width;
     uint16_t screen_height;
+    uint16_t screen_width;
     float unit_x;
     float unit_y;
     float scale_x;
@@ -35,22 +35,6 @@ const float IDEAL_HEIGHT = 10;
 const float IDEAL_UNIT_X = 100;
 const float IDEAL_UNIT_Y = 100;
 
-animation create_animation_from_strip(size_t texture_index,uint16_t number_of_frames,uint16_t sprite_width,uint16_t sprite_height,uint16_t x_offset,uint16_t y_offset){
-    int i= 0;
-    animation output;
-    output.texture_index = texture_index;
-    output.frames = malloc(sizeof(frame)* number_of_frames);
-    for(i=0;i<number_of_frames;i++){
-        frame x = {i*sprite_width + x_offset,y_offset,sprite_width,sprite_height};
-        output.frames[i] = x;
-    }
-    output.number_of_frames = number_of_frames;
-    output.current_frame = 0;
-    return output;
-};
-void destroy_animation(animation* animation){
-    free(animation->frames);
-}
 bool load_texture_from_image(char* path,SDL_Texture** texture){
     SDL_Surface* image_surface = IMG_Load(path);
     if(!image_surface){
@@ -168,9 +152,9 @@ void render_texture(size_t texture_index,vec2 pos){
     SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width/2),(units_y_to_pixel(pos.y)-height/2),width,height};
     SDL_RenderCopy(data.renderer,data.textures[texture_index],NULL,&pos_rect);
 }
-void render_frame(size_t texture_index,frame current_frame,vec2 pos,vec2 given_rotation_point,double angle,flip flip){
-    SDL_Rect source_rect = {current_frame.x,current_frame.y,current_frame.width,current_frame.height};
-    SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-current_frame.width/2),(units_y_to_pixel(pos.y)-current_frame.height/2),current_frame.width,current_frame.height};
+void render_frame(size_t texture_index,uint16_t x,uint16_t y,uint16_t width,uint16_t height,vec2 pos,vec2 given_rotation_point,double angle,flip flip){
+    SDL_Rect source_rect = {x,y,width,height};
+    SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width/2),(units_y_to_pixel(pos.y)-height/2),width,height};
     SDL_Point rotation_point = {given_rotation_point.x,given_rotation_point.y};
     SDL_RenderCopyEx(data.renderer,data.textures[texture_index],&source_rect,&pos_rect,angle,&rotation_point,(SDL_RendererFlip)flip);
 }
@@ -203,7 +187,6 @@ vec2 scaler_multi(vec2 vec,float scaler){
 void update_timing(){
     uint32_t current_tick = SDL_GetTicks();
     data.delta_time = current_tick - data.prev_tick;
-
     if(data.delta_collection_count >= DELTA_SAMPLE_SIZE){
         int i;
         uint32_t sum = 0;
@@ -217,7 +200,6 @@ void update_timing(){
     }else{
         data.delta_time_data[data.delta_collection_count] = data.delta_time;
     }
-
     data.prev_tick = current_tick;
     data.delta_collection_count++;
 }

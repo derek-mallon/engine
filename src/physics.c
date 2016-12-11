@@ -60,7 +60,14 @@ void clean_physics(){
     ARRAY_DESTROY(physics_collision,&data.current_collisions);
 }
 
-phys_body_handle add_phys_body(float x,float y,float width,float height,uint8_t flags,size_t layer_index){
+phys_body* get_phys_body(phys_body_handle handle){
+    if(data.layers.array[handle.layer].bodies.array.array[handle.index].alive == 0){
+        return NULL;
+    }
+    return &data.layers.array[handle.layer].bodies.array.array[handle.index].item;
+}
+
+phys_body* add_phys_body(float x,float y,float width,float height,uint8_t flags,size_t layer_index){
     phys_body_handle handle;
     //Determine the layer
     if(layer_index >= data.layers.size){
@@ -83,13 +90,17 @@ phys_body_handle add_phys_body(float x,float y,float width,float height,uint8_t 
     if((body_ptr = POOL_NEXT_FREE(phys_body,&data.layers.array[handle.layer].bodies,&index_of_next_free))){
         *body_ptr  = body;
         handle.index = index_of_next_free;
+        body_ptr->handle = handle;
     }else{
         handle.index = POOL_ADD(phys_body,&data.layers.array[handle.layer].bodies,body);
+        body_ptr = get_phys_body(handle);
+        body_ptr->handle = handle;
     }
-    return handle;
+    return body_ptr;
 }
 
-uint8_t free_phys_body(phys_body_handle handle){
+uint8_t free_phys_body(phys_body* body){
+    phys_body_handle handle = body->handle;
     if(data.layers.array[handle.layer].bodies.array.array[handle.index].alive == 0){
         return 0;
     }
@@ -97,12 +108,6 @@ uint8_t free_phys_body(phys_body_handle handle){
     return 1;
 }
 
-phys_body* get_phys_body(phys_body_handle handle){
-    if(data.layers.array[handle.layer].bodies.array.array[handle.index].alive == 0){
-        return NULL;
-    }
-    return &data.layers.array[handle.layer].bodies.array.array[handle.index].item;
-}
 //Always set an acceleration never add one
 void update_phys_body(phys_body* body){
     body->acceleration = approach_clamp_vec2(body->acceleration,scaler_vec2(body->friction,((float)get_delta_time())*TIME_FACTOR),0.0,0.5);

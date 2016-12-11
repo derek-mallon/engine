@@ -7,6 +7,9 @@ SOURCE = $(addprefix,../src/,$(wildcard *.c))
 OBJS = $(addprefix ../build/release/,$(patsubst %.c,%.o,$(wildcard *.c)))
 DEBUG_OBJS = $(addprefix ../build/debug/,$(patsubst %.c,%.o,$(wildcard *.c)))
 
+	
+debugger: debug
+	lldb ../build/debug/debug
 run: release 
 	../build/release/release
 run-debug: debug

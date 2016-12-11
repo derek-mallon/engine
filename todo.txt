@@ -1,0 +1,8 @@
+* Finish Entity System
+* Fix Timing
+* Rendering
+* Add Lua scripting
+* Sound
+* Add real physics
+* Make another pass at input
+* Make an example game (pong)
