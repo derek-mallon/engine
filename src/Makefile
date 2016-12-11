@@ -1,4 +1,4 @@
-CC=gcc
+CC=clang
 CFLAGS=-I../include
 CFLAGSDEBUG=-g
 LIBS = -lSDL2 -lSDL2_image -lSDL2_ttf -lspatialhash -lgeometry
@@ -26,4 +26,4 @@ debug: $(DEBUG_OBJS)
 	$(CC) -g -c -o $@ $< $(CFLAGS) $(CFLAGSDEBUG)
 clean: 
 	 rm -rf ../build/debug/*
-	 rm -rf ../build/release/*
+	 rm -rf ../build/re:lease/*

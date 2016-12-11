@@ -41,7 +41,6 @@ void render_sprite(sprite* sprite,vec2 pos){
         animation->current_frame = 0;
     }
 }
-/*
 int main(){
     char* paths[1];
     paths[0] = "testsheet.png";
@@ -118,4 +117,3 @@ int main(){
     destroy_sprite(&test_sprite);
     quit();
 }
-*/

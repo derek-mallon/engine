@@ -1,19 +1,16 @@
 #include "sdl_wrapper.h"
-#include <array.h>
+#include "physics.h"
 #include <objectpool.h>
 #include <stdint.h>
 static color red = {1,0,0,1};
 static color blue = {0,0,1,1};
 static color green = {0,1,0,1};
 
-const uint8_t STATIC = 0x01;
-const uint8_t REAL = 0x02;
 
-typedef struct phys_body{
-    rect rect;
-    vec2 acceleration;
-    uint8_t flags;
-}phys_body;
+
+
+const float TIME_FACTOR = 0.01;
+
 
 POOL_DEC(phys_body)
 POOL_DEF(phys_body)
@@ -22,31 +19,21 @@ typedef struct layer{
     POOL(phys_body)  bodies;
 }layer;
 
-typedef struct phys_body_handle{
-    size_t layer;
-    size_t index;
-}phys_body_handle;
 
 bool aabb(rect rect1,rect rect2){
-    return (fabsf(rect1.center.x-rect2.center.x) < (rect1.half_dim.x + rect2.half_dim.y) && fabsf(rect1.center.y-rect2.center.y) < (rect1.half_dim.y + rect2.half_dim.y));
+    return (fabsf(rect1.center.x-rect2.center.x) < (rect1.half_dim.x + rect2.half_dim.x) && fabsf(rect1.center.y-rect2.center.y) < (rect1.half_dim.y + rect2.half_dim.y));
 }
 
-typedef struct physics_collision{
-    phys_body_handle body1,body2;
-}physics_collision;
 
-ARRAY_DEC(physics_collision)
 ARRAY_DEF(physics_collision)
 ARRAY_DEC(layer)
 ARRAY_DEF(layer)
 
-typedef struct physics_update_output{
-    ARRAY(physics_collision)  *current_collisions;
-}physics_update_output;
 
 typedef struct physics_system{
     ARRAY(layer) layers;
     ARRAY(physics_collision) current_collisions;
+    uint8_t flags;
 }physics_system;
 
 static physics_system data;
@@ -56,10 +43,11 @@ void render_rect(rect rect,color color){
     render_circle(rect.center,1,color);
 }
 
-void init_physics(){
+void init_physics(uint8_t flags){
     data.layers = ARRAY_CREATE(layer,1);
     data.layers.array[0].bodies = POOL_CREATE(phys_body,10);
     data.current_collisions = ARRAY_CREATE(physics_collision,10);
+    data.flags = flags;
 }
 
 
@@ -83,23 +71,21 @@ phys_body_handle add_phys_body(float x,float y,float width,float height,uint8_t 
     }else{
         handle.layer = layer_index;
     }
-    
     vec2 center = {x,y};
     vec2 half_dim = {width/2,height/2};
     rect rect = {center,half_dim};
     vec2 acceleration = {0.0,0.0};
-    phys_body body = {rect,acceleration,flags};
-
+    vec2 velocity = {0.0,0.0};
+    vec2 friction = {0.0,0.0};
+    phys_body body = {rect,acceleration,velocity,friction,flags};
     phys_body* body_ptr = NULL;
     size_t index_of_next_free = 0;
     if((body_ptr = POOL_NEXT_FREE(phys_body,&data.layers.array[handle.layer].bodies,&index_of_next_free))){
         *body_ptr  = body;
         handle.index = index_of_next_free;
     }else{
-        POOL_ADD(phys_body,&data.layers.array[handle.layer].bodies,body);
-        handle.index = data.layers.array[handle.layer].bodies.array.size;
+        handle.index = POOL_ADD(phys_body,&data.layers.array[handle.layer].bodies,body);
     }
-        
     return handle;
 }
 
@@ -117,49 +103,66 @@ phys_body* get_phys_body(phys_body_handle handle){
     }
     return &data.layers.array[handle.layer].bodies.array.array[handle.index].item;
 }
+//Always set an acceleration never add one
+void update_phys_body(phys_body* body){
+    body->acceleration = approach_clamp_vec2(body->acceleration,scaler_vec2(body->friction,((float)get_delta_time())*TIME_FACTOR),0.0,0.5);
+    body->velocity = scaler_vec2(body->acceleration,((float)get_delta_time())*TIME_FACTOR);
+    body->rect.center = add_vec2(body->rect.center,scaler_vec2(body->velocity,((float)get_delta_time())*TIME_FACTOR));
+}
 
 void update_physics(){
-   int i,iter1=0; 
+   int i; 
+
    //reset the current collisions
    data.current_collisions.size = 0;
+
    for(i=0;i<data.layers.size;i++){
        POOL_ITER(phys_body) iterator = POOL_ITER_CREATE(phys_body);
+       //Determine the collisions an move the bodies
        while(POOL_NEXT(phys_body,&data.layers.array[i].bodies,&iterator)){
-            POOL_ITER(phys_body) second_iterator = POOL_ITER_CREATE(phys_body);
-            while(POOL_NEXT(phys_body,&data.layers.array[i].bodies,&second_iterator)){
-                if(iterator.index != second_iterator.index){
-                    if(aabb(iterator.item->rect,second_iterator.item->rect)){
-                        phys_body_handle body1 = {i,iterator.index};
-                        phys_body_handle body2 = {i,second_iterator.index};
-                        physics_collision collision = {body1,body2};
-                        ARRAY_ADD(physics_collision,&data.current_collisions,collision);
-                    }
-                }
-            }
+           //only move and check for collisions if not static
+           if(!(iterator.item->flags & PHYS_BODY_STATIC)){
+               vec2 prev_pos  = iterator.item->rect.center;
+               update_phys_body(iterator.item);
+               uint8_t collided = 0;
+               POOL_ITER(phys_body) second_iterator = POOL_ITER_CREATE(phys_body);
+               while(POOL_NEXT(phys_body,&data.layers.array[i].bodies,&second_iterator)){
+                   if(iterator.index != second_iterator.index){
+                       if(aabb(iterator.item->rect,second_iterator.item->rect)){
+                           collided = 1;
+                           phys_body_handle body1 = {i,iterator.index};
+                           phys_body_handle body2 = {i,second_iterator.index};
+                           if(iterator.item->acceleration.x < 0){
+                               iterator.item->rect.center.x = second_iterator.item->rect.center.x + second_iterator.item->rect.half_dim.x + iterator.item->rect.half_dim.x;
+                           }
+                           if(iterator.item->acceleration.x > 0){
+                               iterator.item->rect.center.x = second_iterator.item->rect.center.x - second_iterator.item->rect.half_dim.x - iterator.item->rect.half_dim.x;
+                           }
+                           if(iterator.item->acceleration.y < 0){
+                               iterator.item->rect.center.y = second_iterator.item->rect.center.y + second_iterator.item->rect.half_dim.y + iterator.item->rect.half_dim.y;
+                           }
+                           if(iterator.item->acceleration.y > 0){
+                               iterator.item->rect.center.y = second_iterator.item->rect.center.y - second_iterator.item->rect.half_dim.y - iterator.item->rect.half_dim.y;
+                           }
+                           physics_collision collision = {body1,body2};
+                           ARRAY_ADD(physics_collision,&data.current_collisions,collision);
+                       }
+                   }
+               }
+               if(collided){
+                   iterator.item->acceleration = create_vec2(0.0,0.0);
+               }
+               if(data.flags & PHYS_DEBUG)
+                   render_rect(iterator.item->rect,red);
+           }else{
+               if(data.flags & PHYS_DEBUG)
+                   render_rect(iterator.item->rect,green);
+           }
        }
    }
 }
 
-int main(){
-    init_sdl("test",1600,1000,NULL,0);
-    sdl_layer_output output;
-    rect rect1 = {create_vec2(0,0),create_vec2(0.5,0.5)};
-    rect rect2 = {create_vec2(-4,0),create_vec2(0.5,0.5)};
-    vec2 pos1 = create_vec2(1.6,1.5);
-    vec2 pos2 = create_vec2(-4.1,1.2);
-    float x = -4;
-    while(get_running()){
-        update_timing();
-        output = input_loop();
-        x += 1 * (float)get_delta_time() * 0.001;
-        rect2.center.x = x;
-        render_rect(rect1,red);
-        if(aabb(rect1,rect2)){
-            render_rect(rect2,green);
-        }else{
-            render_rect(rect2,blue);
-        }
-        render_clear();
-        //update_physics();
-    }
+ARRAY(physics_collision) get_collisions(){
+    return data.current_collisions;
 }
+
