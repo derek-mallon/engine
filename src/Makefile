@@ -23,10 +23,10 @@ release: $(OBJS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 debug: $(DEBUG_OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -DPROFILE -o $@ $^ $(CFLAGS) $(LIBS)
 	mv debug ../build/debug/
 ../build/debug/%.o: %.c $(DEPS)
-	$(CC) -g -c -o $@ $< $(CFLAGS) $(CFLAGSDEBUG)
+	$(CC) -DPROFILE -g -c -o $@ $< $(CFLAGS) $(CFLAGSDEBUG)
 clean: 
 	 rm -rf ../build/debug/*
 	 rm -rf ../build/re:lease/*

@@ -1,7 +1,9 @@
 #include "render.h"
+#include "physics.h"
 
 ARRAY_DEF(frame)
 ARRAY_DEF(animation)
+SYSTEM_DEF(sprite)
 
 animation create_animation_from_strip(size_t texture_index,uint16_t number_of_frames,uint16_t sprite_width,uint16_t sprite_height,uint16_t x_offset,uint16_t y_offset){
     int i= 0;
@@ -56,10 +58,30 @@ void render_sprite(sprite* sprite,vec2 pos){
     render_frame(sprite->texture_index,current_frame.x,current_frame.y,current_frame.width,current_frame.height,pos,sprite->rotation_point,sprite->angle,sprite->flip);
 }
 
+void init_render(){
+    sprite_system_init(10);
+
+}
+
+void update_render(){
+    POOL_ITER(sprite_component) iterator;
+    while(POOL_NEXT(sprite_component,&system_.components,&iterator)){
+    }
+}
+void destroy_render(){
+    int i;
+    POOL_ITER(sprite_component) iterator;
+    while(POOL_NEXT(sprite_component,&system_.components,&iterator)){
+        destroy_sprite(&iterator.item->item);
+    }
+    sprite_system_destroy();
+}
+/*
 int main(){
     char* paths[1];
     paths[0] = "../testsheet.png";
     init_sdl("test",1600,1000,paths,1);
+    init_physics(PHYS_DEBUG);
     vec2 pos;
     sprite test_sprite = create_sprite(8,0);
     size_t WALKING_EAST = ARRAY_ADD(animation,&test_sprite.animations,create_animation_from_strip(0,10,120,130,0,910));
@@ -78,7 +100,6 @@ int main(){
         //INPUT
         output= input_loop();
         update_timing();
-        /*
         int i=0;
         for(i=0;i<output.event_buff_size;i++){
             switch(output.current_event_buff[i].type){
@@ -112,9 +133,7 @@ int main(){
             if(current_state == WALKING_WEST)
                 current_state = STANDING_WEST;
         //RENDER
-        */
         counter += get_delta_time();
-        printf("%lu\n",counter);
         if(counter >= 100){
             counter = 0;
             step_animation_sprite(&test_sprite);
@@ -123,5 +142,7 @@ int main(){
         render_clear();
     }
     destroy_sprite(&test_sprite);
+    destroy_physics();
     quit();
 }
+*/

@@ -111,7 +111,7 @@ sdl_layer_output input_loop(){
     output.event_buff_size = 0;
     while(SDL_PollEvent(&data.event) &&output.event_buff_size < EVENT_BUFF_SIZE){
         if(data.event.type == SDL_QUIT){
-            quit();
+            data.running = false;
         }
         output.current_event_buff[output.event_buff_size] = data.event;
         output.event_buff_size++; 
