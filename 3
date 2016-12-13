@@ -3,7 +3,6 @@
 typedef  SDL_Texture* texture_ptr;
 ARRAY_DEC(texture_ptr)
 ARRAY_DEF(texture_ptr)
-ARRAY_DEF(string)
 #define DELTA_SAMPLE_SIZE 60
 typedef struct sdl_data{
     SDL_Window* window;
@@ -65,13 +64,13 @@ void quit(){
     exit(0);
 }
 
-void init_sdl(init_sdl_data init){
+void init_sdl(char* title,uint16_t screen_width,uint16_t screen_height,char** texture_paths,size_t number_of_textures){
     int i = 0;
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't init SDL: %s",SDL_GetError());
         quit();
     }
-    data.window = SDL_CreateWindow(init.title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,init.screen_width,init.screen_height,SDL_WINDOW_SHOWN);
+    data.window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screen_width,screen_height,SDL_WINDOW_SHOWN);
     if(!data.window){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't create a window: %s",SDL_GetError());
         quit();
@@ -85,16 +84,16 @@ void init_sdl(init_sdl_data init){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't create a renderer: %s",SDL_GetError());
         quit();
     }
-    data.textures = ARRAY_CREATE(texture_ptr,init.texture_paths.size);
-    for(i=0;i<init.texture_paths.size;i++){
-        if(!load_texture_from_image(init.texture_paths.array[i],&data.textures.array[i])){
+    data.textures = ARRAY_CREATE(texture_ptr,number_of_textures);
+    for(i=0;i<number_of_textures;i++){
+        if(!load_texture_from_image(texture_paths[i],&data.textures.array[i])){
             quit();
         }
     }
-    data.screen_width = init.screen_width;
-    data.screen_height = init.screen_height;
-    data.unit_x = init.screen_width/IDEAL_WIDTH;
-    data.unit_y = -init.screen_height/IDEAL_HEIGHT;
+    data.screen_width = screen_width;
+    data.screen_height = screen_height;
+    data.unit_x = screen_width/IDEAL_WIDTH;
+    data.unit_y = -screen_height/IDEAL_HEIGHT;
     data.scale_x = data.unit_x / (IDEAL_UNIT_X);
     data.scale_y = -data.unit_y / (IDEAL_UNIT_Y);
     data.offset_x =  (IDEAL_WIDTH/2);

@@ -4,9 +4,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <geometry.h>
+#include <array.h>
 
 #define EVENT_BUFF_SIZE 10
 
+typedef char* string;
+
+ARRAY_DEC(string)
 //frame flip
 typedef enum flip{
     F_NONE,
@@ -23,7 +27,12 @@ typedef struct sdl_layer_output{
     int mouse_y;
 }sdl_layer_output;
 
-
+typedef struct init_sdl_data{
+    const char* title;
+    uint16_t screen_width;
+    uint16_t screen_height;
+    ARRAY(string) texture_paths;
+}init_sdl_data;
 
 
 float pixel_x_to_units(int pixel_x);
@@ -41,7 +50,7 @@ void render_texture(size_t texture_index,vec2 pos);
 //NOTE rotation point is in pixels relative to the frame
 void render_frame(size_t texture_index,uint16_t x,uint16_t y,uint16_t width,uint16_t height,vec2 pos,vec2 given_rotation_point,double angle,flip flip);
 
-void init_sdl(char* title,uint16_t screen_width,uint16_t screen_height,char** texture_paths,size_t number_of_textures);
+void init_sdl(init_sdl_data data);
 sdl_layer_output input_loop();
 
 bool get_running();

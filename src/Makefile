@@ -1,7 +1,7 @@
 CC=clang
-CFLAGS=-I../include
+CFLAGS=-I../include  -L../lib/lua-5.3.3/src
 CFLAGSDEBUG=-g
-LIBS = -lSDL2 -lSDL2_image -lSDL2_ttf -lspatialhash -lgeometry
+LIBS = -lSDL2 -lSDL2_image -lSDL2_ttf -lspatialhash -lgeometry -llua
 DEPS = $(addprefix,../include/,$(wildcard *.h))
 SOURCE = $(addprefix,../src/,$(wildcard *.c))
 OBJS = $(addprefix ../build/release/,$(patsubst %.c,%.o,$(wildcard *.c)))
