@@ -46,7 +46,4 @@ uint8_t load_sdl_init(lua_State *L,char* filename,init_sdl_data* init){
         return 0;
     return 1;
 }
-int main (void) {
-    
-}
 

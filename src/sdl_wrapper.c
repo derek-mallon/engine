@@ -91,6 +91,7 @@ void init_sdl(init_sdl_data init){
             quit();
         }
     }
+    ARRAY_DESTROY(string,&init.texture_paths);
     data.screen_width = init.screen_width;
     data.screen_height = init.screen_height;
     data.unit_x = init.screen_width/IDEAL_WIDTH;
@@ -107,7 +108,6 @@ void init_sdl(init_sdl_data init){
     data.delta_collection_count = 0;
     data.current_fps = 0;
     data.prev_tick = SDL_GetTicks();
-    SDL_RenderSetScale(data.renderer,data.scale_x,data.scale_y);
 }
 sdl_layer_output input_loop(){
     sdl_layer_output output;
@@ -122,6 +122,7 @@ sdl_layer_output input_loop(){
     SDL_GetMouseState(&output.mouse_x,&output.mouse_y);
     output.mouse_x /= data.scale_x;
     output.mouse_y /= data.scale_y;
+    int i;
     return output;
 }
 
@@ -152,12 +153,12 @@ void render_texture(size_t texture_index,vec2 pos){
     int width;
     int height;
     SDL_QueryTexture(data.textures.array[texture_index],NULL,NULL,&width,&height);
-    SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width/2),(units_y_to_pixel(pos.y)-height/2),width,height};
+    SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width*data.unit_x/2),(units_y_to_pixel(pos.y)-height*data.unit_y/2),width,height};
     SDL_RenderCopy(data.renderer,data.textures.array[texture_index],NULL,&pos_rect);
 }
 void render_frame(size_t texture_index,uint16_t x,uint16_t y,uint16_t width,uint16_t height,vec2 pos,vec2 given_rotation_point,double angle,flip flip){
     SDL_Rect source_rect = {x,y,width,height};
-    SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width/2),(units_y_to_pixel(pos.y)-height/2),width,height};
+    SDL_Rect pos_rect = {(units_x_to_pixel(pos.x)-width*data.scale_x/2),(units_y_to_pixel(pos.y)-height*data.scale_y/2),width*data.scale_x,height*data.scale_y};
     SDL_Point rotation_point = {given_rotation_point.x,given_rotation_point.y};
     SDL_RenderCopyEx(data.renderer,data.textures.array[texture_index],&source_rect,&pos_rect,angle,&rotation_point,(SDL_RendererFlip)flip);
 }
@@ -172,7 +173,7 @@ bool get_running(){
 void render_rect_outline(vec2 pos,vec2 dim,color color){
     int width = units_x_scalar_to_pixel(dim.x);
     int height = units_y_scalar_to_pixel(dim.y);
-    SDL_Rect rect = {units_x_to_pixel(pos.x)-width/2,units_y_to_pixel(pos.y)-height/2,width,height};
+    SDL_Rect rect = {units_x_to_pixel(pos.x)-width*data.unit_x/2,units_y_to_pixel(pos.y)-height*data.unit_y/2,width,height};
     SDL_SetRenderDrawColor(data.renderer,color.r*255,color.g*255,color.b*255,color.a*255);
     SDL_RenderDrawRect(data.renderer,&rect);
 }
