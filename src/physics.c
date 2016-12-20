@@ -1,5 +1,5 @@
-#include "sdl_wrapper.h"
 #include "physics.h"
+#include "sdl_wrapper.h"
 #include "system.h"
 #include <objectpool.h>
 #include <stdint.h>
@@ -61,7 +61,6 @@ phys_body create_phys_body(float x,float y,float width,float height,uint8_t flag
     return body;
 }
 
-
 //Always set an acceleration never add one
 void update_phys_body(phys_body* body){
     body->acceleration = approach_clamp_vec2(body->acceleration,scaler_vec2(body->friction,((float)get_delta_time())*TIME_FACTOR),0.0,0.5);
@@ -120,7 +119,6 @@ void update_physics(){
        }
    }
 }
-
 ARRAY(physics_collision) get_collisions(){
     return data.current_collisions;
 }

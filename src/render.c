@@ -1,4 +1,5 @@
 #include "render.h"
+#include "sdl_wrapper.h"
 #include "physics.h"
 
 ARRAY_DEF(frame)
@@ -98,7 +99,7 @@ int main(){
     sdl_layer_output output= input_loop();
     pos = create_vec2(0,0);
     phys_body sprite_body_constructor = create_phys_body(0,0,pixel_x_to_units(test_sprite.animations.array[0].frames.array[0].width),pixel_y_to_units(test_sprite.animations.array[0].frames.array[0].height),PHYS_BODY_REAL,0);
-    phys_body_component* sprite_body = add_phys_body(sprite_body_constructor,1,0);
+    //phys_body_component* sprite_body = add_phys_body(sprite_body_constructor,1,0);
     size_t current_state;
     size_t counter = 0;
     while(get_running()){

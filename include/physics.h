@@ -3,6 +3,7 @@
 
 #include "system.h"
 #include <array.h>
+#include <geometry.h>
 
 #define PHYS_DEBUG 0x01
 
@@ -20,7 +21,6 @@ typedef struct phys_body{
 }phys_body;
 
 SYSTEM_L_DEC(phys_body)
-    phys_body_handle handle;
 
 typedef struct physics_collision{
     phys_body_handle body1,body2;
