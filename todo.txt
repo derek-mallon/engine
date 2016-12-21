@@ -1,7 +1,7 @@
 * Finish Entity System
-* Fix Timing
+//* Fix Timing
 * Rendering
-* Add Lua scripting
+//* Add Lua scripting
 * Sound
 * Add real physics
 * Make another pass at input
