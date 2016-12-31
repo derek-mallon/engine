@@ -76,6 +76,7 @@ void destroy_render(){
     }
     sprite_system_destroy();
 }
+/*
 int main(){
     ARRAY(string) paths;
     ARRAY_ADD(string,&paths,"../testsheet.png");
@@ -164,3 +165,4 @@ int main(){
     destroy_physics();
     quit();
 }
+*/
