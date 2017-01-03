@@ -1,14 +1,12 @@
 #include "sdl_wrapper.h"
 #include <SDL2/SDL_image.h>
+#include "utils.h"
 typedef  SDL_Texture* texture_ptr;
-ARRAY_DEC(texture_ptr)
-ARRAY_DEF(texture_ptr)
-ARRAY_DEF(string)
+
 #define DELTA_SAMPLE_SIZE 60
 typedef struct sdl_data{
     SDL_Window* window;
     SDL_Renderer* renderer;
-    ARRAY(texture_ptr) textures;
     size_t number_of_textures;
     SDL_Event event;
     uint16_t screen_height;
@@ -25,9 +23,10 @@ typedef struct sdl_data{
     uint32_t delta_time_data[DELTA_SAMPLE_SIZE];
     uint16_t delta_collection_count;
     float current_fps;
+    chunk textures;
+
 }sdl_data;
 
-static sdl_data data;
 
 vec2 create_vec2(float x,float y){
     vec2 vec = {x,y};
@@ -54,6 +53,7 @@ bool load_texture_from_image(char* path,SDL_Texture** texture){
     return true;
 }
 void quit(){
+    /*
     int i=0;
     for(i=0;i<data.number_of_textures;i++){
         SDL_DestroyTexture(data.textures.array[0]);
@@ -63,16 +63,17 @@ void quit(){
     SDL_Quit();
     ARRAY_DESTROY(texture_ptr,&data.textures);
     exit(0);
+    */
 }
 
-void init_sdl(init_sdl_data init){
-    int i = 0;
+void init_sdl(init_sdl_data init,sdl_data* data){
+    int i,j;
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't init SDL: %s",SDL_GetError());
         quit();
     }
-    data.window = SDL_CreateWindow(init.title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,init.screen_width,init.screen_height,SDL_WINDOW_SHOWN);
-    if(!data.window){
+    data->window = SDL_CreateWindow((char*)&init.title.heap->ptr[init.title.start],SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,init.screen_width,init.screen_height,SDL_WINDOW_SHOWN);
+    if(!data->window){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't create a window: %s",SDL_GetError());
         quit();
     }
@@ -80,48 +81,47 @@ void init_sdl(init_sdl_data init){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't init SDL_image: %s",SDL_GetError());
         quit();
     }
-    data.renderer = SDL_CreateRenderer(data.window,-1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if(!data.renderer){
+    data->renderer = SDL_CreateRenderer(data->window,-1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if(!data->renderer){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't create a renderer: %s",SDL_GetError());
         quit();
     }
-    data.textures = ARRAY_CREATE(texture_ptr,init.texture_paths.size);
-    for(i=0;i<init.texture_paths.size;i++){
-        if(!load_texture_from_image(init.texture_paths.array[i],&data.textures.array[i])){
+    
+    for(i=init.texture_paths.start,j=data->textures.start;i<init.texture_paths.end;i++,j++){
+        if(!load_texture_from_image(get_chunk(str,init.texture_paths,i),&get_chunk(texture_ptr,data->textures,j))){
             quit();
         }
     }
-    ARRAY_DESTROY(string,&init.texture_paths);
-    data.screen_width = init.screen_width;
-    data.screen_height = init.screen_height;
-    data.unit_x = init.screen_width/IDEAL_WIDTH;
-    data.unit_y = -init.screen_height/IDEAL_HEIGHT;
-    data.scale_x = data.unit_x / (IDEAL_UNIT_X);
-    data.scale_y = -data.unit_y / (IDEAL_UNIT_Y);
-    data.offset_x =  (IDEAL_WIDTH/2);
-    data.offset_y =  -(IDEAL_HEIGHT/2);
-    data.running = true;
-    data.delta_time = 1;
+    data->screen_width = init.screen_width;
+    data->screen_height = init.screen_height;
+    data->unit_x = init.screen_width/IDEAL_WIDTH;
+    data->unit_y = -init.screen_height/IDEAL_HEIGHT;
+    data->scale_x = data->unit_x / (IDEAL_UNIT_X);
+    data->scale_y = -data->unit_y / (IDEAL_UNIT_Y);
+    data->offset_x =  (IDEAL_WIDTH/2);
+    data->offset_y =  -(IDEAL_HEIGHT/2);
+    data->running = true;
+    data->delta_time = 1;
     for(i=0;i<DELTA_SAMPLE_SIZE;i++){
-        data.delta_time_data[i] = 1;
+        data->delta_time_data[i] = 1;
     }
-    data.delta_collection_count = 0;
-    data.current_fps = 0;
-    data.prev_tick = SDL_GetTicks();
+    data->delta_collection_count = 0;
+    data->current_fps = 0;
+    data->prev_tick = SDL_GetTicks();
 }
-sdl_layer_output input_loop(){
+sdl_layer_output input_loop(chunk data){
     sdl_layer_output output;
     output.event_buff_size = 0;
-    while(SDL_PollEvent(&data.event) &&output.event_buff_size < EVENT_BUFF_SIZE){
-        if(data.event.type == SDL_QUIT){
-            data.running = false;
+    while(SDL_PollEvent(&data->event) &&output.event_buff_size < EVENT_BUFF_SIZE){
+        if(data->event.type == SDL_QUIT){
+            data->running = false;
         }
-        output.current_event_buff[output.event_buff_size] = data.event;
+        output.current_event_buff[output.event_buff_size] = data->event;
         output.event_buff_size++; 
     }
     SDL_GetMouseState(&output.mouse_x,&output.mouse_y);
-    output.mouse_x /= data.scale_x;
-    output.mouse_y /= data.scale_y;
+    output.mouse_x /= data->scale_x;
+    output.mouse_y /= data->scale_y;
     int i;
     return output;
 }

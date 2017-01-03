@@ -3,7 +3,6 @@
 #include "../lib/lua-5.3.3/src/lua.h"
 #include "../lib/lua-5.3.3/src/lualib.h"
 #include "../lib/lua-5.3.3/src/lauxlib.h"
-#include "sdl_wrapper.h"
 
 uint8_t extract_string(lua_State *L,char* name,const char** str){
     lua_getglobal(L,name);
@@ -20,9 +19,11 @@ uint8_t extract_uint16(lua_State *L,char* name,uint16_t* number){
     return 1;
 }
 
+/*
 uint8_t extract_table_of_strings(lua_State *L,char* name,ARRAY(string)* strings){
     return 0;
 }
+*/
 
 uint8_t pcall_wrapper(lua_State *L,int nargs,int nresults,int msgh){
     if(lua_pcall(L,nargs,nresults,msgh) !=0){
@@ -31,6 +32,7 @@ uint8_t pcall_wrapper(lua_State *L,int nargs,int nresults,int msgh){
     return 1;
 }
 
+/*
 uint8_t load_sdl_init(lua_State *L,char* filename,init_sdl_data* init){
     init_sdl_data data;
     if(luaL_loadfile(L,filename) || lua_pcall(L,0,0,0)){
@@ -46,4 +48,4 @@ uint8_t load_sdl_init(lua_State *L,char* filename,init_sdl_data* init){
         return 0;
     return 1;
 }
-
+*/

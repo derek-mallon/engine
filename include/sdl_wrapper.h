@@ -1,16 +1,15 @@
 #ifndef SDL_WRAPPER_H
 #define SDL_WRAPPER_H
+#include "heap.h"
 #include <SDL2/Sdl.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <geometry.h>
-#include <array.h>
 
 #define EVENT_BUFF_SIZE 10
 
 typedef char* string;
 
-ARRAY_DEC(string)
 //frame flip
 typedef enum flip{
     F_NONE,
@@ -28,12 +27,11 @@ typedef struct sdl_layer_output{
 }sdl_layer_output;
 
 typedef struct init_sdl_data{
-    const char* title;
+    chunk title;
     uint16_t screen_width;
     uint16_t screen_height;
-    ARRAY(string) texture_paths;
+    chunk texture_paths;
 }init_sdl_data;
-
 
 float pixel_x_to_units(int pixel_x);
 
