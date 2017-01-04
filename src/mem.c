@@ -109,3 +109,29 @@ ERR_error MEM_next_free_item(MEM_heap* h,size_t* refrence){
 }
 
 
+ERR_error MEM_serialize_heap(MEM_heap* heap,UTI_str path,size_t* total_size,void* data){
+
+    *total_size =  (sizeof(size_t)*4)+(sizeof(heap->name))+(sizeof(uint8_t)*heap->capacity)+(sizeof(size_t)*heap->capacity)+(heap->size_of_object*heap->capacity);
+    data = malloc(*total_size);
+    if(data == NULL){
+        return ERR_BAD;
+    }
+
+    *(size_t*)(&data[0]) = heap->size_of_object;
+    *(size_t*)(&data[sizeof(size_t)]) = heap->capacity;
+    *(size_t*)(&data[sizeof(size_t)*2]) = heap->top;
+    *(size_t*)(&data[sizeof(size_t)*3]) = heap->alive_top;
+    strcpy((char*)(&data[sizeof(size_t)*4]),heap->name);
+    memcpy(&data[(sizeof(size_t)*4) + (sizeof(heap->name))],heap->flags,(sizeof(uint8_t)*heap->capacity));
+    memcpy(&data[(sizeof(size_t)*4) + (sizeof(heap->name)) + (sizeof(uint8_t)*heap->capacity)],heap->alive_list,(sizeof(size_t)*heap->capacity));
+    memcpy(&data[(sizeof(size_t)*4) + (sizeof(heap->name)) + (sizeof(uint8_t)*heap->capacity) + (sizeof(size_t)*heap->capacity)],heap->ptr,(heap->size_of_object*heap->capacity));
+    return ERR_GOOD;
+}
+
+ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,void* data){
+    size_t* heap_sizes  = malloc(sizeof(size_t)*manager->number_of_heaps);
+    void** heap_data = malloc(sizeof(void*)*manager->number_of_heaps);
+    int i;
+    for(i=0;i<manager->number_of_heaps;i++){
+    }
+}
