@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "utils.h"
 #include "error.h"
+#include "mem.h"
 
 #define FIL_MAX_PATH_SIZE 100
 
@@ -47,4 +48,8 @@ void FIL_mkdir(UTI_str p);
 uint8_t FIL_file_exits(UTI_str p);
 
 uint8_t FIL_file_is_dir(UTI_str p);
+
+void FIL_remove_file(UTI_str p);
+
+ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths);
 #endif

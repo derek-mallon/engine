@@ -1,10 +1,12 @@
 #include "file_handling.h"
 #include "string.h"
 #include "all.h"
+#include <string.h>
 #ifdef UNIX
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
 #endif
 #ifdef WIN
 #include <windows.h>
@@ -62,7 +64,7 @@ ERR_error FIL_file_open(FIL_path* p){
 }
 
 void FIL_file_close(FIL_path* p){
-    ERR_ASSERT(p->file != NULL,"null file")
+    ERR_ASSERT((p->file != NULL),"null file")
     fclose(p->file);
 }
 
@@ -115,7 +117,33 @@ uint8_t FIL_file_is_dir(UTI_str p){
 }
 
 void FIL_remove_file(UTI_str p){
-    ERR_ASSERT(FIL_file_exits(p),"file does not exist") 
-    ERR_ASSERT(FIL_file_is_dir(p),"file is directory")
+    ERR_ASSERT(FIL_file_exits(p),"file %s does not exist",p) 
+    ERR_ASSERT(!FIL_file_is_dir(p),"file %s is directory",p)
     remove(p);
+}
+
+ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
+#ifdef UNIX
+    ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
+    DIR* directory;
+    struct dirent *entry;
+    if((directory = opendir(p)) != NULL){
+        while((entry = readdir(directory)) != NULL){
+            if(!FIL_file_is_dir(entry->d_name)){
+                size_t index;
+                ERR_error result;
+                if((result = MEM_next_free_item(heap_of_paths,&index)) != ERR_GOOD){
+                    return result;
+                }
+                UTI_concat(MEM_get_item(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
+            }
+        }
+        closedir (directory);
+        return ERR_GOOD;
+    }
+    return ERR_MISSING_FILE;
+#endif
+#ifdef WIN
+    ERR_ASSERT(false,"UNIMPLMENTED CODE!")
+#endif
 }
