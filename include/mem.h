@@ -1,3 +1,13 @@
+/**
+ * @file mem.h
+ * @author Derek Mallon
+ * @brief Project wide memory managerment. Uses MEM_*
+ * This provides the function definitions for manipulating heaps and heap managers which allow for all of the dynamic memory allocation to be done at once.
+ * The heap data structure also provides memory recycling is needed.
+ * The goal of the memory management is to prevent the need to allocate memory more than once during the life time of a program. 
+ * Instead all of the memory is allocated in predefined heaps which serve as arrays of objects. 
+ * Memory can also be saved and loaded from disk.
+ */
 #ifndef MEM_C
 #define MEM_C
 #include <stdlib.h>
@@ -11,42 +21,94 @@ typedef struct MEM_heap MEM_heap;
 typedef struct MEM_heap_manager MEM_heap_manager;
 typedef struct MEM_chunk MEM_chunk;
 
+/**
+ * @brief template structure for creating heaps initially.
+ * This only stores the properties of needed to create a heap.
+ */
 struct MEM_heap_template{
     size_t size_of_object;
     size_t capacity;
     char name[UTI_DEFAULT_NAME_SIZE];
 };
 
+/**
+ * @brief heap structure.
+ * Contains three heap allocated arrays. 
+ * 1. ptr which is the objects themselves. 
+ * 2. flags, these are any flags needed to describe the object at the same index in ptr.
+ * 3. alive_list is a list of all of the freeded indexes. This makes it faster to reuse objects.
+ * Each heap is given a name for debug purposes, when using a macro is set to the type of the heap
+ */
 struct MEM_heap{
     size_t size_of_object;
     size_t capacity;
-    void* ptr;
     size_t top;
+    size_t alive_top;
+    void* ptr;
     uint8_t* flags;
     size_t* alive_list;
-    size_t alive_top;
     char name[UTI_DEFAULT_NAME_SIZE];
 };
 
+/**
+ * @brief heap manager structure used for creating, storing, and cleaning up heaps.
+ * Contains an heap allocated array of heaps.
+ * Has a name to identify it from other heap managers.
+ */
 struct MEM_heap_manager{
     MEM_heap* heaps;
     size_t number_of_heaps;
     char name[UTI_DEFAULT_NAME_SIZE];
 };
 
+/**
+ * @brief Internal function for creating heap templates, use the macro version.
+ */
 MEM_heap_template _MEM_create_heap_template(size_t object_size,size_t capacity,UTI_str name);
 
+/**
+ * @brief a macro which creates a heap template.
+ * @param type pass the type of the object.
+ * @param capacity the capacity of the heap.
+ * @return a heap template.
+ */
 #define MEM_create_heap_template(type,capacity) _MEM_create_heap_template(sizeof(type),capacity,#type)
 
+/**
+ * @brief a macro for getting an object with a given index.
+ * @param type pass the type of the object (used for the casting).
+ * @param heap pass a pointer to the heap which the object is located in.
+ * @param i the index which will returned.
+ * @return the object (not a copy).
+ */
 #define MEM_get_item(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
 
-MEM_heap_manager MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap_template*));
+/**
+ * @brief 
+ */
 
-void MEM_destroy_heap_manager(MEM_heap_manager* manager);
+ERR_error MEM_create_heap(MEM_heap_template template,MEM_heap* result);
+
+ERR_error MEM_destroy_heap(MEM_heap* h);
+
+ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap_template*,void*),void* data,MEM_heap_manager* manager);
+
+ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager);
 
 ERR_error MEM_free_item(MEM_heap* h,size_t index);
 
 ERR_error MEM_next_free_item(MEM_heap* h,size_t* refrence);
 
+size_t MEM_get_heap_binary_size(MEM_heap* heap);
+
+size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager);
+
+ERR_error MEM_serialize_heap(MEM_heap* heap,size_t* pos,void* data);
+
+ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,void* data);
+
+ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,void* data);
+
+ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,void* data);
 
 #endif

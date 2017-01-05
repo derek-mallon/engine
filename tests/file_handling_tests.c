@@ -8,7 +8,7 @@ ENVIROMENT_SETUP{
 ENVIROMENT_CLEANUP{
 }
 
-void heap_init(MEM_heap_template* templates){
+void heap_init(MEM_heap_template* templates,void* data){
     templates[0] = MEM_create_heap_template(UTI_buff_stor,10);
 }
 TESTS
@@ -35,7 +35,8 @@ TESTS
     UNIT_TEST_START("find all files in dir")
         path = FIL_create_path("test.tmp",FIL_TYPE_TEXT,FIL_MODE_WRITE);
         FIL_file_open(&path);
-        MEM_heap_manager manager = MEM_create_heap_manager("main",1,heap_init);
+        MEM_heap_manager manager;
+        MEM_create_heap_manager("main",1,heap_init,NULL,&manager);
         FIL_get_all_files(".",&manager.heaps[0]);
         int i;
         uint8_t found = 0;
