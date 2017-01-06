@@ -7,6 +7,7 @@
         #define WIN
     #endif
 #define FOREACH_MEM_LOC(MEM_LOC) \
+        MEM_LOC(MEM_LOC_COM_DATA)\
         MEM_LOC(MEM_LOC_COM_LIB_HANDLES)\
         MEM_LOC(MEM_LOC_WPR_SDL_DATA)\
         MEM_LOC(MEM_LOC_AST_DATA)\

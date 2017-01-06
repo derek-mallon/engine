@@ -133,7 +133,7 @@ size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager){
     }
     return size;
 }
-ERR_error MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
+void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
     void* data = &handle.heap->ptr[handle.index];
     *(size_t*)(&(data)[*pos]) = heap->size_of_object;
     step_type(*pos,size_t);
@@ -152,10 +152,9 @@ ERR_error MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
     step_array(*pos,sizeof(size_t),heap->capacity);
     memcpy(&(data)[*pos],heap->ptr,(heap->size_of_object*heap->capacity));
     step_array(*pos,heap->size_of_object,heap->capacity);
-    return ERR_GOOD;
 }
 
-ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle){
+void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle){
     void* data = &handle.heap->ptr[handle.index];
     int i;
     *(size_t*)(&(data)[0]) = manager->number_of_heaps;
@@ -166,8 +165,6 @@ ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_h
     for(i=0;i<manager->number_of_heaps;i++){
         MEM_serialize_heap(&manager->heaps[i],pos,handle);
     }
-    
-    return ERR_GOOD;
 }
 
 ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){

@@ -5,6 +5,8 @@ tests:
 	./bin/file_handling_tests
 	clang -o bin/sdl_wrapper_tests  -g -DDEBUG sdl_wrapper_tests.c ../src/sdl_wrapper.c ../src/utils.c ../src/geometry.c ../src/mem.c -lSDL2 -I../include
 	./bin/sdl_wrapper_tests
+	clang -o bin/io_tests  -g -DDEBUG io_tests.c ../io.c ../src/sdl_wrapper.c ../src/utils.c ../src/geometry.c ../src/mem.c -lSDL2 -I../include
+	./bin/io_tests
 	
 clean:
 	rm -rf bin

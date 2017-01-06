@@ -52,6 +52,7 @@ FIL_path FIL_create_path(UTI_str path,FIL_file_type type,uint32_t mode){
     UTI_concat(p.raw,1,path);
     p.extension = strchr(path,'.');
     p.type = type;
+    p.mode = mode;
     return p;
 }
 
@@ -148,6 +149,21 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
 #endif
 }
 
-ERR_error FIL_read_binary(FIL_path path,MEM_heap* heap,size_t index){
-
+ERR_error FIL_read_binary(FIL_path* path,MEM_handle handle){
+    ERR_ASSERT(path->file != NULL,"file with path %s not opened",path->raw);
+    ERR_ASSERT(path->mode & FIL_MODE_READ,"file with path %s is not readable, the files mode is %s",path->raw,path->ops);
+    size_t result = fread(MEM_get_item_m_p(void,handle.heap,handle.index),handle.heap->size_of_object,1,path->file);
+    if(result != handle.heap->size_of_object){
+        return ERR_BAD;
+    }
+    return ERR_GOOD;
+}
+ERR_error FIL_write_binary(FIL_path* path,MEM_handle handle){
+    ERR_ASSERT(path->file != NULL,"file with path %s not opened",path->raw);
+    ERR_ASSERT(path->mode & FIL_MODE_WRITE,"file with path %s is not writable, the files mode is %s",path->raw,path->ops);
+    size_t result = fwrite(MEM_get_item_m_p(void,handle.heap,handle.index),handle.heap->size_of_object,1,path->file);
+    if(result != handle.heap->size_of_object){
+        return ERR_BAD;
+    }
+    return ERR_GOOD;
 }

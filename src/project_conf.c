@@ -1,15 +1,5 @@
+#include "proj_conf.h"
 #include "file_handling.h"
-#include "utils.h"
-typedef struct PRJ_project_conf PRJ_project_conf;
-
-
-struct PRJ_project_conf{
-    UTI_buff_stor project_name;
-    UTI_buff_stor base_path;
-    UTI_buff_stor texture_dir;
-    UTI_buff_stor component_dir;
-    UTI_buff_stor bin_dir;
-};
 
 PRJ_project_conf PRJ_default_conf(UTI_str project_name){
     PRJ_project_conf conf;
@@ -26,6 +16,8 @@ void PRJ_create_proj(PRJ_project_conf* conf){
    FIL_mkdir(conf->component_dir.buff);
    FIL_mkdir(conf->bin_dir.buff);
 }
+
+
 
 #ifdef PROJECT_CONF
 int main(int argc,char* argv[]){

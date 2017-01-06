@@ -102,9 +102,9 @@ size_t MEM_get_heap_binary_size(MEM_heap* heap);
 
 size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager);
 
-ERR_error MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
+void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
 
-ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,MEM_handle handle);
+void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,MEM_handle handle);
 
 ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
 
@@ -127,6 +127,8 @@ void MEM_init(MEM_heap_manager* heap_manager);
 #define MEM_get_item(type,handle) (*(type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
 
 #define MEM_get_item_m(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
+
+#define MEM_get_item_m_p(type,heap,i) (type*)&(heap)->ptr[i*((heap)->size_of_object)]
 
 #define MEM_get_heap(m,i) &m->heaps[i]
 

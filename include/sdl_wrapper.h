@@ -25,7 +25,6 @@ enum WPR_status{
     WPR_READY,
 };
 
-WPR_status WPR_STATUS = WPR_CLOSED;
 
 
 enum WPR_flip{
@@ -113,4 +112,6 @@ float WPR_get_fps(WPR_sdl_data* data);
 ERR_error WPR_add_texture(WPR_sdl_data* data,SDL_Surface* surface,size_t* texture_index);
 
 ERR_error WPR_cleanup(WPR_sdl_data* data);
+
+WPR_status WPR_get_status();
 #endif

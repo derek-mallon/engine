@@ -33,6 +33,7 @@ struct FIL_path{
     char ops[FIL_OPTIONS_SIZE];
     FIL_file_type type;
     FIL_file file;
+    uint32_t mode;
 };
 
 
@@ -53,4 +54,8 @@ uint8_t FIL_file_is_dir(UTI_str p);
 void FIL_remove_file(UTI_str p);
 
 ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths);
+
+ERR_error FIL_read_binary(FIL_path* path,MEM_handle handle);
+
+ERR_error FIL_write_binary(FIL_path* path,MEM_handle handle);
 #endif

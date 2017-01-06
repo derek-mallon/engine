@@ -4,6 +4,7 @@
 #define DELTA_SAMPLE_SIZE 60
 
 
+static WPR_status WPR_STATUS = WPR_CLOSED;
 
 const float IDEAL_WIDTH = 16;
 const float IDEAL_HEIGHT = 10;
@@ -178,4 +179,7 @@ ERR_error WPR_cleanup(WPR_sdl_data* data){
     return ERR_GOOD;
 }
 
+WPR_status WPR_get_status(){
+    return WPR_STATUS;
+}
 
