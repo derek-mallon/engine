@@ -5,6 +5,9 @@
 MEM_heap_template test_heap_template;
 MEM_heap test_heap;
 MEM_heap_manager test_heap_manager;
+MEM_handle handle;
+MEM_heap mem_heap;
+
 char buff[50];
 
 enum{
@@ -17,7 +20,8 @@ void test_init_fun(MEM_heap_template* templates,void* data){
 void add_int(){
         size_t index;
         MEM_next_free_item(&test_heap_manager.heaps[INT],&index);
-        MEM_get_item(int,&test_heap_manager.heaps[INT],index) = 5;
+        MEM_handle handle = MEM_create_handle_from_manager(&test_heap_manager,INT,index);
+        MEM_get_item(int,handle) = 5;
 }
 
 ENVIROMENT_SETUP{ //Run before each unit test.
@@ -51,8 +55,9 @@ TESTS
         if(MEM_next_free_item(&test_heap_manager.heaps[INT],&index) == ERR_BAD){
             ASSERT(0);
         }
-        MEM_get_item(int,&test_heap_manager.heaps[INT],index) = 5;
-        ASSERT(MEM_get_item(int,&test_heap_manager.heaps[INT],index) == 5);
+        handle = MEM_create_handle_from_manager(&test_heap_manager,INT,index);
+        MEM_get_item(int,handle) = 5;
+        ASSERT(MEM_get_item(int,handle) == 5);
     UNIT_TEST_END
     UNIT_TEST_START("test adding 4 then deleting a middle one and then add in the middle one's index'")
         MEM_create_heap_manager("test manager",1,test_init_fun,NULL,&test_heap_manager);
@@ -69,14 +74,17 @@ TESTS
         MEM_heap test_heap,test_heap2;
         MEM_create_heap(MEM_create_heap_template(int,100),&test_heap);
         MEM_next_free_item(&test_heap,&index);
-        MEM_get_item(int,&test_heap,index) = 5;
+        handle = MEM_create_handle_from_heap(&test_heap,index);
+        MEM_get_item(int,handle) = 5;
         size_t pos = 0;
-        void* ptr = malloc(MEM_get_heap_binary_size(&test_heap));
-        MEM_serialize_heap(&test_heap,&pos,ptr);
+        MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_binary_size(&test_heap),1,"mem buff"),&mem_heap);
+        handle = MEM_create_handle_from_heap(&mem_heap,0);
+        MEM_serialize_heap(&test_heap,&pos,handle);
         pos = 0;
-        MEM_deserialize_heap(&test_heap2,&pos,ptr);
-        ASSERT(MEM_get_item(int,&test_heap2,index) == 5);
-        free(ptr);
+        MEM_deserialize_heap(&test_heap2,&pos,handle);
+        MEM_destroy_heap(&mem_heap);
+        handle = MEM_create_handle_from_heap(&test_heap2,index);
+        ASSERT(MEM_get_item(int,handle) == 5);
     UNIT_TEST_END
     UNIT_TEST_START("serializing and deserializing an entire heap manager")
         MEM_heap_manager test_heap_manager2;
@@ -85,9 +93,13 @@ TESTS
         add_int();
         size_t pos2 = 0;
         void* ptr1 = malloc(MEM_get_heap_manager_binary_size(&test_heap_manager));
-        MEM_serialize_heap_manager(&test_heap_manager,&pos2,ptr1);
+        MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_manager_binary_size(&test_heap_manager),1,"mem buff"),&mem_heap);
+        handle = MEM_create_handle_from_heap(&mem_heap,0);
+        MEM_serialize_heap_manager(&test_heap_manager,&pos2,handle);
         pos2 = 0;
-        MEM_deserialize_heap_manager(&test_heap_manager2,&pos2,ptr1);
-        ASSERT(MEM_get_item(int,&test_heap_manager2.heaps[INT],0) == 5);
+        MEM_deserialize_heap_manager(&test_heap_manager2,&pos2,handle);
+        MEM_destroy_heap(&mem_heap);
+        handle = MEM_create_handle_from_manager(&test_heap_manager2,INT,0);
+        ASSERT(MEM_get_item(int,handle) == 5);
     UNIT_TEST_END
 END_TESTS

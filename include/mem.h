@@ -19,7 +19,7 @@
 typedef struct MEM_heap_template MEM_heap_template;
 typedef struct MEM_heap MEM_heap;
 typedef struct MEM_heap_manager MEM_heap_manager;
-typedef struct MEM_chunk MEM_chunk;
+typedef struct MEM_handle MEM_handle;
 
 /**
  * @brief template structure for creating heaps initially.
@@ -61,6 +61,11 @@ struct MEM_heap_manager{
     char name[UTI_DEFAULT_NAME_SIZE];
 };
 
+struct MEM_handle{
+    MEM_heap* heap;
+    size_t index;
+};
+
 /**
  * @brief Internal function for creating heap templates, use the macro version.
  */
@@ -74,14 +79,8 @@ MEM_heap_template _MEM_create_heap_template(size_t object_size,size_t capacity,U
  */
 #define MEM_create_heap_template(type,capacity) _MEM_create_heap_template(sizeof(type),capacity,#type)
 
-/**
- * @brief a macro for getting an object with a given index.
- * @param type pass the type of the object (used for the casting).
- * @param heap pass a pointer to the heap which the object is located in.
- * @param i the index which will returned.
- * @return the object (not a copy).
- */
-#define MEM_get_item(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
+#define MEM_create_heap_template_not_type(size,capacity,name) _MEM_create_heap_template(size,capacity,name)
+
 
 /**
  * @brief 
@@ -103,12 +102,32 @@ size_t MEM_get_heap_binary_size(MEM_heap* heap);
 
 size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager);
 
-ERR_error MEM_serialize_heap(MEM_heap* heap,size_t* pos,void* data);
+ERR_error MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
 
-ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,void* data);
+ERR_error MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,MEM_handle handle);
 
-ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,void* data);
+ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
 
-ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,void* data);
+ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle);
+
+MEM_handle MEM_create_handle_from_manager(MEM_heap_manager* manager,size_t index_of_heap,size_t index);
+
+MEM_handle MEM_create_handle_from_heap(MEM_heap* heap,size_t index);
+
+void MEM_init(MEM_heap_manager* heap_manager);
+
+
+/**
+ * @brief a macro for getting an object with a given index.
+ * @param type pass the type of the object (used for the casting).
+ * @param heap pass a pointer to the heap which the object is located in.
+ * @param i the index which will returned.
+ * @return the object (not a copy).
+ */
+#define MEM_get_item(type,handle) (*(type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
+
+#define MEM_get_item_m(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
+
+#define MEM_get_heap(m,i) &m->heaps[i]
 
 #endif

@@ -24,6 +24,7 @@ typedef enum FIL_file_type FIL_file_type;
 enum FIL_file_type{
     FIL_TYPE_BINARY,
     FIL_TYPE_TEXT,
+    FIL_TYPE_LIB,
 };
 
 struct FIL_path{

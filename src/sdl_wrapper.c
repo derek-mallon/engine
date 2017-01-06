@@ -45,6 +45,7 @@ ERR_error WPR_init_sdl(WPR_sdl_data* data,WPR_init_sdl_data init,MEM_heap* textu
     data->current_fps = 0;
     data->prev_tick = SDL_GetTicks();
     data->textures = textures;
+    WPR_STATUS = WPR_READY;
     return ERR_GOOD;
 }
 WPR_sdl_layer_output WPR_input_loop(WPR_sdl_data* data){
@@ -90,15 +91,15 @@ void WPR_render_clear(WPR_sdl_data* data){
 void WPR_render_texture(WPR_sdl_data* data,size_t texture_index,GEO_vec2 pos){
     int width;
     int height;
-    SDL_QueryTexture(MEM_get_item(WPR_texture_ptr,data->textures,texture_index),NULL,NULL,&width,&height);
+    SDL_QueryTexture(MEM_get_item_m(WPR_texture_ptr,data->textures,texture_index),NULL,NULL,&width,&height);
     SDL_Rect pos_rect = {(WPR_units_x_to_pixel(data,pos.x)-width*data->unit_x/2),(WPR_units_y_to_pixel(data,pos.y)-height*data->unit_y/2),width,height};
-    SDL_RenderCopy(data->renderer,MEM_get_item(WPR_texture_ptr,data->textures,texture_index),NULL,&pos_rect);
+    SDL_RenderCopy(data->renderer,MEM_get_item_m(WPR_texture_ptr,data->textures,texture_index),NULL,&pos_rect);
 }
 void WPR_render_frame(WPR_sdl_data* data,size_t texture_index,uint16_t x,uint16_t y,uint16_t width,uint16_t height,GEO_vec2 pos,GEO_vec2 given_rotation_point,double angle,WPR_flip flip){
     SDL_Rect source_rect = {x,y,width,height};
     SDL_Rect pos_rect = {(WPR_units_x_to_pixel(data,pos.x)-width*data->scale_x/2),(WPR_units_y_to_pixel(data,pos.y)-height*data->scale_y/2),width*data->scale_x,height*data->scale_y};
     SDL_Point rotation_point = {given_rotation_point.x,given_rotation_point.y};
-    SDL_RenderCopyEx(data->renderer,MEM_get_item(WPR_texture_ptr,data->textures,texture_index),&source_rect,&pos_rect,angle,&rotation_point,(SDL_RendererFlip)flip);
+    SDL_RenderCopyEx(data->renderer,MEM_get_item_m(WPR_texture_ptr,data->textures,texture_index),&source_rect,&pos_rect,angle,&rotation_point,(SDL_RendererFlip)flip);
 }
 WPR_color WPR_create_color(float r,float g,float  b,float a){
     WPR_color color = {r,g,b,a};
@@ -153,25 +154,27 @@ ERR_error WPR_add_texture(WPR_sdl_data* data,SDL_Surface* surface,size_t* textur
     if(MEM_next_free_item(data->textures,&index) == ERR_BAD){
         return ERR_BAD;
     }
-    MEM_get_item(WPR_texture_ptr,data->textures,index) = SDL_CreateTextureFromSurface(data->renderer,surface);
-    if(MEM_get_item(WPR_texture_ptr,data->textures,index) == NULL){
+    MEM_get_item_m(WPR_texture_ptr,data->textures,index) = SDL_CreateTextureFromSurface(data->renderer,surface);
+    if(MEM_get_item_m(WPR_texture_ptr,data->textures,index) == NULL){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't turn the surface into a texture: %s",SDL_GetError());
         return ERR_BAD;
     }
     SDL_FreeSurface(surface);
+    *texture_index = index;
     return ERR_GOOD;
 }
 
 ERR_error WPR_cleanup(WPR_sdl_data* data){
     int i;
     for(i=0;i<data->textures->top;i++){
-        SDL_DestroyTexture(MEM_get_item(WPR_texture_ptr,data->textures,i));
+        SDL_DestroyTexture(MEM_get_item_m(WPR_texture_ptr,data->textures,i));
     }
     SDL_DestroyRenderer(data->renderer);
     SDL_DestroyWindow(data->window);
     data->renderer = NULL;
     data->window = NULL;
     SDL_Quit();
+    WPR_STATUS = WPR_CLOSED;
     return ERR_GOOD;
 }
 

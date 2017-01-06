@@ -41,7 +41,8 @@ TESTS
         int i;
         uint8_t found = 0;
         for(i=0;i<manager.heaps[0].top;i++){
-            if(strcmp(MEM_get_item(UTI_buff_stor,&manager.heaps[0],i).buff,"test.tmp") == 0){
+            MEM_handle handle = MEM_create_handle_from_manager(&manager,0,i);
+            if(strcmp(MEM_get_item(UTI_buff_stor,handle).buff,"test.tmp") == 0){
                 found = 1;
             }
         }

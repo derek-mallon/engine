@@ -2,6 +2,7 @@
 #include "utils.h"
 typedef struct PRJ_project_conf PRJ_project_conf;
 
+
 struct PRJ_project_conf{
     UTI_buff_stor project_name;
     UTI_buff_stor base_path;

@@ -135,7 +135,7 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
                 if((result = MEM_next_free_item(heap_of_paths,&index)) != ERR_GOOD){
                     return result;
                 }
-                UTI_concat(MEM_get_item(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
+                UTI_concat(MEM_get_item_m(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
             }
         }
         closedir (directory);
@@ -146,4 +146,8 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
 #ifdef WIN
     ERR_ASSERT(false,"UNIMPLMENTED CODE!")
 #endif
+}
+
+ERR_error FIL_read_binary(FIL_path path,MEM_heap* heap,size_t index){
+
 }
