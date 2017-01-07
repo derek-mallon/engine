@@ -69,5 +69,11 @@ TESTS
         FIL_read_binary(&path,MEM_create_handle_from_heap(&mem_heap,0));
         ASSERT(strcmp(MEM_get_item_m_p(char,&mem_heap,0),"test words") == 0);
     UNIT_TEST_END
+    UNIT_TEST_START("check if dir")
+        path = FIL_create_path("bin",FIL_TYPE_DIR,FIL_MODE_READ);
+        ASSERT(FIL_file_is_dir(path.raw));
+        path = FIL_create_path("file_handling_tests",FIL_TYPE_DIR,FIL_MODE_READ);
+        ASSERT(!FIL_file_is_dir(path.raw));
+    UNIT_TEST_END
 END_TESTS
 

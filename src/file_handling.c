@@ -123,6 +123,26 @@ void FIL_remove_file(UTI_str p){
     remove(p);
 }
 
+size_t FIL_get_number_of_files_in_dir(UTI_str p){
+#ifdef UNIX
+    ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
+    size_t count = 0;
+    DIR* directory;
+    struct dirent *entry;
+    if((directory = opendir(p)) != NULL){
+        while((entry = readdir(directory)) != NULL){
+            if(!FIL_file_is_dir(entry->d_name)){
+                count++;
+            }
+        }
+        closedir (directory);
+    }
+    return count;
+#endif
+#ifdef WIN
+    ERR_ASSERT(false,"UNIMPLMENTED CODE!")
+#endif
+}
 ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
 #ifdef UNIX
     ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
@@ -131,6 +151,52 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
     if((directory = opendir(p)) != NULL){
         while((entry = readdir(directory)) != NULL){
             if(!FIL_file_is_dir(entry->d_name)){
+                size_t index;
+                ERR_error result;
+                if((result = MEM_next_free_item(heap_of_paths,&index)) != ERR_GOOD){
+                    return result;
+                }
+                UTI_concat(MEM_get_item_m(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
+            }
+        }
+        closedir (directory);
+        return ERR_GOOD;
+    }
+    return ERR_MISSING_FILE;
+#endif
+#ifdef WIN
+    ERR_ASSERT(false,"UNIMPLMENTED CODE!")
+#endif
+}
+
+size_t FIL_get_number_of_dirs_in_dir(UTI_str p){
+#ifdef UNIX
+    ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
+    size_t count = 0;
+    DIR* directory;
+    struct dirent *entry;
+    if((directory = opendir(p)) != NULL){
+        while((entry = readdir(directory)) != NULL){
+            if(FIL_file_is_dir(entry->d_name)){
+                count++;
+            }
+        }
+        closedir (directory);
+    }
+    return count;
+#endif
+#ifdef WIN
+    ERR_ASSERT(false,"UNIMPLMENTED CODE!")
+#endif
+}
+ERR_error FIL_get_all_dirs(UTI_str p,MEM_heap* heap_of_paths){
+#ifdef UNIX
+    ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
+    DIR* directory;
+    struct dirent *entry;
+    if((directory = opendir(p)) != NULL){
+        while((entry = readdir(directory)) != NULL){
+            if(FIL_file_is_dir(entry->d_name)){
                 size_t index;
                 ERR_error result;
                 if((result = MEM_next_free_item(heap_of_paths,&index)) != ERR_GOOD){

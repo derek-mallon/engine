@@ -24,7 +24,9 @@ typedef enum FIL_file_type FIL_file_type;
 enum FIL_file_type{
     FIL_TYPE_BINARY,
     FIL_TYPE_TEXT,
+    FIL_TYPE_DIR,
     FIL_TYPE_LIB,
+    FIL_TYPE_UNKNOWN,
 };
 
 struct FIL_path{
@@ -53,7 +55,13 @@ uint8_t FIL_file_is_dir(UTI_str p);
 
 void FIL_remove_file(UTI_str p);
 
+size_t FIL_get_number_of_files_in_dir(UTI_str p);
+
 ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths);
+
+size_t FIL_get_number_of_dirs_in_dir(UTI_str p);
+
+ERR_error FIL_get_all_dirs(UTI_str p,MEM_heap* heap_of_paths);
 
 ERR_error FIL_read_binary(FIL_path* path,MEM_handle handle);
 
