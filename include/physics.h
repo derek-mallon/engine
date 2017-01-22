@@ -1,6 +1,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
+/*
 #include "system.h"
 #include <array.h>
 #include <geometry.h>
@@ -34,5 +35,6 @@ phys_body create_phys_body(float x,float y,float width,float height,uint8_t flag
 void update_physics();
 
 ARRAY(physics_collision) get_collisions();
+*/
 
 #endif

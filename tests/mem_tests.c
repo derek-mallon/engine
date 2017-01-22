@@ -19,7 +19,7 @@ void test_init_fun(MEM_heap_template* templates,void* data){
 
 void add_int(){
         size_t index;
-        MEM_next_free_item(&test_heap_manager.heaps[INT],&index);
+        MEM_add_top(&test_heap_manager.heaps[INT],&index);
         MEM_handle handle = MEM_create_handle_from_manager(&test_heap_manager,INT,index);
         MEM_get_item(int,handle) = 5;
 }
@@ -45,35 +45,19 @@ TESTS
         ASSERT(test_heap_manager.heaps[INT].capacity == 100);
         ASSERT(test_heap_manager.heaps[INT].ptr != NULL);
         ASSERT(test_heap_manager.heaps[INT].top == 0);
-        ASSERT(test_heap_manager.heaps[INT].alive_list != NULL);
-        ASSERT(test_heap_manager.heaps[INT].alive_top == 0);
         ASSERT(strcmp(test_heap_manager.heaps[INT].name,"int") == 0);
     UNIT_TEST_END
     UNIT_TEST_START("assigning a value")
         MEM_create_heap_manager("test manager",1,test_init_fun,NULL,&test_heap_manager);
         size_t index;
-        if(MEM_next_free_item(&test_heap_manager.heaps[INT],&index) == ERR_BAD){
-            ASSERT(0);
-        }
         handle = MEM_create_handle_from_manager(&test_heap_manager,INT,index);
         MEM_get_item(int,handle) = 5;
         ASSERT(MEM_get_item(int,handle) == 5);
     UNIT_TEST_END
-    UNIT_TEST_START("test adding 4 then deleting a middle one and then add in the middle one's index'")
-        MEM_create_heap_manager("test manager",1,test_init_fun,NULL,&test_heap_manager);
-        add_int();
-        add_int();
-        add_int();
-        add_int();
-        MEM_free_item(&test_heap_manager.heaps[INT],2);
-        size_t index2;
-        MEM_next_free_item(&test_heap_manager.heaps[INT],&index2);
-        ASSERT(index2 == 2);
-    UNIT_TEST_END 
     UNIT_TEST_START("serializing and deserializing a heap")
         MEM_heap test_heap,test_heap2;
         MEM_create_heap(MEM_create_heap_template(int,100),&test_heap);
-        MEM_next_free_item(&test_heap,&index);
+        MEM_add_top(&test_heap,&index);
         handle = MEM_create_handle_from_heap(&test_heap,index);
         MEM_get_item(int,handle) = 5;
         size_t pos = 0;

@@ -151,8 +151,8 @@ float WPR_get_fps(WPR_sdl_data* data){
 }
 
 ERR_error WPR_add_texture(WPR_sdl_data* data,SDL_Surface* surface,size_t* texture_index){
-    size_t index; 
-    if(MEM_next_free_item(data->textures,&index) == ERR_BAD){
+    size_t index;
+    if(MEM_add_top(data->textures,&index) == ERR_BAD){
         return ERR_BAD;
     }
     MEM_get_item_m(WPR_texture_ptr,data->textures,index) = SDL_CreateTextureFromSurface(data->renderer,surface);

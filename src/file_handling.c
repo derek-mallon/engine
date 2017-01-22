@@ -152,10 +152,8 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
         while((entry = readdir(directory)) != NULL){
             if(!FIL_file_is_dir(entry->d_name)){
                 size_t index;
+                MEM_add_top(heap_of_paths,&index);
                 ERR_error result;
-                if((result = MEM_next_free_item(heap_of_paths,&index)) != ERR_GOOD){
-                    return result;
-                }
                 UTI_concat(MEM_get_item_m(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
             }
         }
@@ -198,10 +196,7 @@ ERR_error FIL_get_all_dirs(UTI_str p,MEM_heap* heap_of_paths){
         while((entry = readdir(directory)) != NULL){
             if(FIL_file_is_dir(entry->d_name)){
                 size_t index;
-                ERR_error result;
-                if((result = MEM_next_free_item(heap_of_paths,&index)) != ERR_GOOD){
-                    return result;
-                }
+                MEM_add_top(heap_of_paths,&index);
                 UTI_concat(MEM_get_item_m(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
             }
         }

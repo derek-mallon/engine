@@ -6,6 +6,9 @@
 typedef void (*COM_init_func)(MEM_handle handle,MEM_handle messanger);
 typedef void (*COM_update_func)(MEM_handle handle,MEM_handle messanger,size_t dt);
 typedef void (*COM_destroy_func)(MEM_handle handle,MEM_handle messanger);
+typedef size_t (*COM_get_size_func)();
+typedef size_t (*COM_get_number_of_messages)();
+typedef char** (*COM_get_messages)();
 
 typedef struct COM_component COM_component;
 typedef struct COM_data COM_data;
@@ -19,16 +22,17 @@ struct COM_component{
 struct COM_data{
     MEM_heap* lib_handles;
     MEM_handle sdl_wrapper_data;
+    MEM_heap* messages;
 };
 
 
-
+void COM_build_comp_mem(MEM_heap* templates,MEM_heap* lib_handles);
 void COM_init(MEM_heap_manager* manager){
     COM_data* data= &MEM_get_item_m(COM_data,MEM_get_heap(manager,MEM_LOC_COM_DATA),0);
     data->lib_handles = MEM_get_heap(manager,MEM_LOC_COM_LIB_HANDLES);
-    data->sdl_wrapper_data = MEM_create_handle_from_manager(manager,MEM_LOC_COM_DATA,0);
+    data->sdl_wrapper_data = MEM_create_handle_from_manager(manager,MEM_LOC_WPR_SDL_DATA,0);
     int i;
-    for(i=0;i<com_data->lib_handles->capacity;i++){
+    for(i=0;i<data->lib_handles->capacity;i++){
     }
 }
 

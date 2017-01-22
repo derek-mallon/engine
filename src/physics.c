@@ -1,8 +1,6 @@
 #include "physics.h"
 #include "sdl_wrapper.h"
-#include "system.h"
-#include <objectpool.h>
-#include <stdint.h>
+/*
 static color red = {1,0,0,1};
 static color blue = {0,0,1,1};
 static color green = {0,1,0,1};
@@ -123,3 +121,4 @@ ARRAY(physics_collision) get_collisions(){
     return data.current_collisions;
 }
 
+*/

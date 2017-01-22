@@ -23,9 +23,6 @@ ERR_error MEM_create_heap(MEM_heap_template template,MEM_heap* result){
     result->size_of_object = template.size_of_object;
     result->capacity = template.capacity;
     result->top = 0;
-    result->alive_list = malloc(sizeof(size_t)*template.capacity);
-    result->flags = malloc(sizeof(uint8_t)*template.capacity);
-    result->alive_top  = 0;
     strcpy(result->name,template.name);
     return ERR_GOOD;
 }
@@ -54,7 +51,6 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
     char* c;
     long number_of_templates;
     int i,j;
-    void* alive;
 
     MEM_heap_template* templates = malloc(sizeof(MEM_heap_template)*count);
     if(templates == NULL){
@@ -92,34 +88,21 @@ ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager){
     return ERR_GOOD;
 }
 
-ERR_error MEM_free_item(MEM_heap* h,size_t index){
-    if(h->flags[index] & MEM_DEAD){
-        return ERR_BAD;
-    }
-    h->alive_list[h->alive_top] = index;
-    h->flags[index] |= MEM_DEAD;
-    h->alive_top++;
-    return ERR_GOOD;
-}
 
-ERR_error MEM_next_free_item(MEM_heap* h,size_t* refrence){
-    if(h->alive_top != 0){
-        *refrence =  h->alive_list[h->alive_top -1];
-        h->alive_top--;
-        h->flags[*refrence] &=  ~MEM_DEAD;
-    }else if(h->top < h->capacity-1){
-        *refrence = h->top;
-        h->top++;
-    }else{
-       return ERR_MEM;
-    }
-    return ERR_GOOD;
-}
 
 #define step_type(pos,type) pos += sizeof(type)
 
 #define step_array(pos,inc,amount) pos += inc*amount
 
+ERR_error MEM_add_top(MEM_heap* heap,size_t* index){
+    if(heap->top >= heap->capacity){
+        index = NULL;
+        return ERR_MEM;
+    }
+    *index = heap->top;
+    heap->top++;
+    return ERR_GOOD;
+}
 
 size_t MEM_get_heap_binary_size(MEM_heap* heap){
     return (sizeof(size_t)*4+sizeof(heap->name)+sizeof(uint8_t)*heap->capacity+sizeof(size_t)*heap->capacity+heap->size_of_object*heap->capacity);
@@ -141,15 +124,9 @@ void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
     step_type(*pos,size_t);
     *(size_t*)(&(data)[*pos]) = heap->top;
     step_type(*pos,size_t);
-    *(size_t*)(&(data)[*pos]) = heap->alive_top;
-    step_type(*pos,size_t);
     strcpy((char*)(&(data)[*pos]),heap->name);
     step_type(*pos,heap->name);
 
-    memcpy(&(data)[*pos],heap->flags,(sizeof(uint8_t)*heap->capacity));
-    step_array(*pos,sizeof(uint8_t),heap->capacity);
-    memcpy(&(data)[*pos],heap->alive_list,(sizeof(size_t)*heap->capacity));
-    step_array(*pos,sizeof(size_t),heap->capacity);
     memcpy(&(data)[*pos],heap->ptr,(heap->size_of_object*heap->capacity));
     step_array(*pos,heap->size_of_object,heap->capacity);
 }
@@ -175,22 +152,14 @@ ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
     step_type(*pos,size_t);
     heap->top = *(size_t*)(&data[*pos]);
     step_type(*pos,size_t);
-    heap->alive_top = *(size_t*)(&data[*pos]);
-    step_type(*pos,size_t);
     strcpy(heap->name,&data[*pos]);
     step_type(*pos,heap->name);
 
-    heap->flags = malloc(heap->capacity*sizeof(uint8_t));
-    heap->alive_list = malloc(heap->capacity*sizeof(uint8_t));
     heap->ptr = malloc(heap->capacity* heap->size_of_object);
-    if(heap->flags == NULL || heap->alive_list == NULL || heap->ptr == NULL){
+    if(heap->ptr == NULL){
         return ERR_MEM;
     }
 
-    memcpy(heap->flags,&data[*pos],heap->capacity*sizeof(uint8_t));
-    step_array(*pos,sizeof(uint8_t),heap->capacity);
-    memcpy(heap->alive_list,&data[*pos],heap->capacity*sizeof(size_t));
-    step_array(*pos,sizeof(size_t),heap->capacity);
     memcpy(heap->ptr,&data[*pos],heap->capacity*heap->size_of_object);
     step_array(*pos,heap->size_of_object,heap->capacity);
 

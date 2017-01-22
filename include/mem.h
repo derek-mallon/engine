@@ -43,10 +43,7 @@ struct MEM_heap{
     size_t size_of_object;
     size_t capacity;
     size_t top;
-    size_t alive_top;
     void* ptr;
-    uint8_t* flags;
-    size_t* alive_list;
     char name[UTI_DEFAULT_NAME_SIZE];
 };
 
@@ -94,9 +91,7 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
 
 ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager);
 
-ERR_error MEM_free_item(MEM_heap* h,size_t index);
-
-ERR_error MEM_next_free_item(MEM_heap* h,size_t* refrence);
+ERR_error MEM_add_top(MEM_heap* heap,size_t* index);
 
 size_t MEM_get_heap_binary_size(MEM_heap* heap);
 
@@ -124,11 +119,13 @@ void MEM_init(MEM_heap_manager* heap_manager);
  * @param i the index which will returned.
  * @return the object (not a copy).
  */
-#define MEM_get_item(type,handle) (*(type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
+#define MEM_get_item(type,handle) (((type*)&(handle.heap)->ptr)[handle.index])
 
-#define MEM_get_item_m(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
+#define MEM_get_item_p(type,handle) &((type*)&(handle.heap)->ptr)[handle.index]
 
-#define MEM_get_item_m_p(type,heap,i) (type*)&(heap)->ptr[i*((heap)->size_of_object)]
+#define MEM_get_item_m(type,heap,i) (((type*)&(heap)->ptr)[i])
+
+#define MEM_get_item_m_p(type,heap,i) &((type*)&(heap)->ptr)[i]
 
 #define MEM_get_heap(m,i) &m->heaps[i]
 

@@ -24,5 +24,6 @@ void PRJ_create_proj(PRJ_project_conf* conf);
 
 void PRJ_create_proj_mem();
 
+void PRJ_create_proj_binary(PRJ_project_conf* conf);
 
 #endif

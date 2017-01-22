@@ -2,9 +2,7 @@
 #include "sdl_wrapper.h"
 #include "physics.h"
 
-ARRAY_DEF(frame)
-ARRAY_DEF(animation)
-SYSTEM_DEF(sprite)
+/*
 
 animation create_animation_from_strip(size_t texture_index,uint16_t number_of_frames,uint16_t sprite_width,uint16_t sprite_height,uint16_t x_offset,uint16_t y_offset){
     int i= 0;
@@ -76,6 +74,7 @@ void destroy_render(){
     }
     sprite_system_destroy();
 }
+*/
 /*
 int main(){
     ARRAY(string) paths;

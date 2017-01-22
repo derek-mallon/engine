@@ -2,7 +2,7 @@
 #include "io.h"
 WPR_sdl_data data;
 ENVIROMENT_SETUP{
-    WPR_init_sdl()
+    WPR_init_sdl();
     IO_init();
 }
 ENVIROMENT_CLEANUP{

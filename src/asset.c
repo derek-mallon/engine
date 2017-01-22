@@ -1,24 +1,13 @@
-#include "all.h"
+#include "asset.h"
 #include "io.h"
-#include "mem.h"
-#include "error.h"
-
-#include "sdl_wrapper.h"
 #include "dlfcn.h"
 
-typedef struct AST_data AST_data;
 
 
-struct AST_data{
-    MEM_heap* texture_paths;
-    MEM_heap* component_lib_paths;
-    MEM_heap* audio_paths;
-    WPR_sdl_data* sdl_wrapper_data;
-};
 
-void AST_lib_open(LIB_HANDLE* handle,FIL_path path){
-    *handle = dlopen(path.raw,RTLD_LAZY);
-    ERR_ASSERT(*handle != NULL,"could not open lib at %s",path.raw)
+void AST_lib_open(LIB_HANDLE* handle,UTI_str str){
+    *handle = dlopen(str,RTLD_LAZY);
+    ERR_ASSERT(*handle != NULL,"could not open lib at %s",str)
 }
 
 void AST_lib_close(LIB_HANDLE handle){
@@ -42,7 +31,7 @@ void AST_init(MEM_heap_manager* manager){
     }
     //load all of the libs for the components in order that they appear in the libs path heap.
     for(i=0;i<data->component_lib_paths->capacity;i++){
-        AST_lib_open(MEM_get_item_m_p(LIB_HANDLE,lib_handles,i),MEM_get_item_m(FIL_path,data->component_lib_paths,i));
+        AST_lib_open(MEM_get_item_m_p(LIB_HANDLE,lib_handles,i),MEM_get_item_m(UTI_buff_stor,data->component_lib_paths,i).buff);
     }
     //TODO: Audio loading
     //FILE: tracking and live reload debug mode.

@@ -14,7 +14,6 @@ void heap_init(MEM_heap_template* templates){
     templates[MOD_HT_TEXTURE_PTR] = MEM_create_heap_template(MOD_HT_TEXTURE_PTR,10);
 }
 void init(){
-    MEM_heap_manager heap_manager = MEM_create_heap_manager("main",MOD_HT_END,heap_init);
 
 
 }

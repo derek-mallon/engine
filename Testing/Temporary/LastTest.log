@@ -1,0 +1,26 @@
+Start testing: Jan 21 18:56 EST
+----------------------------------------------------------
+1/1 Testing: MEM_TESTS
+1/1 Test: MEM_TESTS
+Command: "/Users/derek/C/engine/bin/mem_tests"
+Directory: /Users/derek/C/engine
+"MEM_TESTS" start time: Jan 21 18:56 EST
+Output:
+----------------------------------------------------------
+mem_tests(2896,0x7fff7c23d000) malloc: *** error for object 0x7fd100000005: pointer being freed was not allocated
+*** set a breakpoint in malloc_error_break to debug
+
+TEST 1: create a heap template [32msucceeded[0m
+
+TEST 2: create heap_manager with one template [32msucceeded[0m
+
+TEST 3: assigning a value [32msucceeded[0m
+<end of output>
+Test time =   0.28 sec
+----------------------------------------------------------
+Test Failed.
+"MEM_TESTS" end time: Jan 21 18:56 EST
+"MEM_TESTS" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jan 21 18:56 EST
