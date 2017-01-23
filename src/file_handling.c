@@ -223,7 +223,7 @@ ERR_error FIL_write_binary(FIL_path* path,MEM_handle handle){
     ERR_ASSERT(path->file != NULL,"file with path %s not opened",path->raw);
     ERR_ASSERT(path->mode & FIL_MODE_WRITE,"file with path %s is not writable, the files mode is %s",path->raw,path->ops);
     size_t result = fwrite(MEM_get_item_m_p(void,handle.heap,handle.index),handle.heap->size_of_object,1,path->file);
-    if(result != handle.heap->size_of_object){
+    if(result != handle.heap->capacity){
         return ERR_BAD;
     }
     return ERR_GOOD;

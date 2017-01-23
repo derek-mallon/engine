@@ -122,6 +122,32 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named sdl_wrapper_tests
+
+# Build rule for target.
+sdl_wrapper_tests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sdl_wrapper_tests
+.PHONY : sdl_wrapper_tests
+
+# fast build rule for target.
+sdl_wrapper_tests/fast:
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/build
+.PHONY : sdl_wrapper_tests/fast
+
+#=============================================================================
+# Target rules for targets named io_tests
+
+# Build rule for target.
+io_tests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 io_tests
+.PHONY : io_tests
+
+# fast build rule for target.
+io_tests/fast:
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/build
+.PHONY : io_tests/fast
+
+#=============================================================================
 # Target rules for targets named mem_tests
 
 # Build rule for target.
@@ -135,19 +161,6 @@ mem_tests/fast:
 .PHONY : mem_tests/fast
 
 #=============================================================================
-# Target rules for targets named engine
-
-# Build rule for target.
-engine: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 engine
-.PHONY : engine
-
-# fast build rule for target.
-engine/fast:
-	$(MAKE) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/build
-.PHONY : engine/fast
-
-#=============================================================================
 # Target rules for targets named project_creator
 
 # Build rule for target.
@@ -159,6 +172,19 @@ project_creator: cmake_check_build_system
 project_creator/fast:
 	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/build
 .PHONY : project_creator/fast
+
+#=============================================================================
+# Target rules for targets named engine
+
+# Build rule for target.
+engine: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 engine
+.PHONY : engine
+
+# fast build rule for target.
+engine/fast:
+	$(MAKE) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/build
+.PHONY : engine/fast
 
 Users/derek/C/engine/src/asset.o: Users/derek/C/engine/src/asset.c.o
 
@@ -565,6 +591,33 @@ Users/derek/C/engine/src/utils.c.s:
 	$(MAKE) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/Users/derek/C/engine/src/utils.c.s
 .PHONY : Users/derek/C/engine/src/utils.c.s
 
+Users/derek/C/engine/tests/io_tests.o: Users/derek/C/engine/tests/io_tests.c.o
+
+.PHONY : Users/derek/C/engine/tests/io_tests.o
+
+# target to build an object file
+Users/derek/C/engine/tests/io_tests.c.o:
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/Users/derek/C/engine/tests/io_tests.c.o
+.PHONY : Users/derek/C/engine/tests/io_tests.c.o
+
+Users/derek/C/engine/tests/io_tests.i: Users/derek/C/engine/tests/io_tests.c.i
+
+.PHONY : Users/derek/C/engine/tests/io_tests.i
+
+# target to preprocess a source file
+Users/derek/C/engine/tests/io_tests.c.i:
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/Users/derek/C/engine/tests/io_tests.c.i
+.PHONY : Users/derek/C/engine/tests/io_tests.c.i
+
+Users/derek/C/engine/tests/io_tests.s: Users/derek/C/engine/tests/io_tests.c.s
+
+.PHONY : Users/derek/C/engine/tests/io_tests.s
+
+# target to generate assembly for a file
+Users/derek/C/engine/tests/io_tests.c.s:
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/Users/derek/C/engine/tests/io_tests.c.s
+.PHONY : Users/derek/C/engine/tests/io_tests.c.s
+
 Users/derek/C/engine/tests/mem_tests.o: Users/derek/C/engine/tests/mem_tests.c.o
 
 .PHONY : Users/derek/C/engine/tests/mem_tests.o
@@ -592,6 +645,33 @@ Users/derek/C/engine/tests/mem_tests.c.s:
 	$(MAKE) -f CMakeFiles/mem_tests.dir/build.make CMakeFiles/mem_tests.dir/Users/derek/C/engine/tests/mem_tests.c.s
 .PHONY : Users/derek/C/engine/tests/mem_tests.c.s
 
+Users/derek/C/engine/tests/sdl_wrapper_tests.o: Users/derek/C/engine/tests/sdl_wrapper_tests.c.o
+
+.PHONY : Users/derek/C/engine/tests/sdl_wrapper_tests.o
+
+# target to build an object file
+Users/derek/C/engine/tests/sdl_wrapper_tests.c.o:
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/Users/derek/C/engine/tests/sdl_wrapper_tests.c.o
+.PHONY : Users/derek/C/engine/tests/sdl_wrapper_tests.c.o
+
+Users/derek/C/engine/tests/sdl_wrapper_tests.i: Users/derek/C/engine/tests/sdl_wrapper_tests.c.i
+
+.PHONY : Users/derek/C/engine/tests/sdl_wrapper_tests.i
+
+# target to preprocess a source file
+Users/derek/C/engine/tests/sdl_wrapper_tests.c.i:
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/Users/derek/C/engine/tests/sdl_wrapper_tests.c.i
+.PHONY : Users/derek/C/engine/tests/sdl_wrapper_tests.c.i
+
+Users/derek/C/engine/tests/sdl_wrapper_tests.s: Users/derek/C/engine/tests/sdl_wrapper_tests.c.s
+
+.PHONY : Users/derek/C/engine/tests/sdl_wrapper_tests.s
+
+# target to generate assembly for a file
+Users/derek/C/engine/tests/sdl_wrapper_tests.c.s:
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/Users/derek/C/engine/tests/sdl_wrapper_tests.c.s
+.PHONY : Users/derek/C/engine/tests/sdl_wrapper_tests.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -600,10 +680,12 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... test"
+	@echo "... sdl_wrapper_tests"
+	@echo "... io_tests"
 	@echo "... mem_tests"
-	@echo "... engine"
-	@echo "... edit_cache"
 	@echo "... project_creator"
+	@echo "... edit_cache"
+	@echo "... engine"
 	@echo "... Users/derek/C/engine/src/asset.o"
 	@echo "... Users/derek/C/engine/src/asset.i"
 	@echo "... Users/derek/C/engine/src/asset.s"
@@ -649,9 +731,15 @@ help:
 	@echo "... Users/derek/C/engine/src/utils.o"
 	@echo "... Users/derek/C/engine/src/utils.i"
 	@echo "... Users/derek/C/engine/src/utils.s"
+	@echo "... Users/derek/C/engine/tests/io_tests.o"
+	@echo "... Users/derek/C/engine/tests/io_tests.i"
+	@echo "... Users/derek/C/engine/tests/io_tests.s"
 	@echo "... Users/derek/C/engine/tests/mem_tests.o"
 	@echo "... Users/derek/C/engine/tests/mem_tests.i"
 	@echo "... Users/derek/C/engine/tests/mem_tests.s"
+	@echo "... Users/derek/C/engine/tests/sdl_wrapper_tests.o"
+	@echo "... Users/derek/C/engine/tests/sdl_wrapper_tests.i"
+	@echo "... Users/derek/C/engine/tests/sdl_wrapper_tests.s"
 .PHONY : help
 
 

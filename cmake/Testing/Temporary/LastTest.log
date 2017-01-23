@@ -1,26 +1,66 @@
-Start testing: Jan 22 11:31 EST
+Start testing: Jan 23 10:59 EST
 ----------------------------------------------------------
-1/1 Testing: MEM_TESTS
-1/1 Test: MEM_TESTS
+1/3 Testing: MEM_TESTS
+1/3 Test: MEM_TESTS
 Command: "/Users/derek/C/engine/bin/mem_tests"
 Directory: /Users/derek/C/engine/cmake
-"MEM_TESTS" start time: Jan 22 11:31 EST
+"MEM_TESTS" start time: Jan 23 10:59 EST
 Output:
 ----------------------------------------------------------
-mem_tests(4883,0x7fff7b248000) malloc: *** error for object 0x7ff400000005: pointer being freed was not allocated
-*** set a breakpoint in malloc_error_break to debug
 
 TEST 1: create a heap template [32msucceeded[0m
 
 TEST 2: create heap_manager with one template [32msucceeded[0m
 
 TEST 3: assigning a value [32msucceeded[0m
+
+TEST 4: serializing and deserializing a heap [32msucceeded[0m
+
+TEST 5: serializing and deserializing an entire heap manager [32msucceeded[0m
+
+5 out of 5 tests succeeded.
 <end of output>
-Test time =   0.14 sec
+Test time =   0.01 sec
 ----------------------------------------------------------
-Test Failed.
-"MEM_TESTS" end time: Jan 22 11:31 EST
+Test Passed.
+"MEM_TESTS" end time: Jan 23 10:59 EST
 "MEM_TESTS" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Jan 22 11:31 EST
+2/3 Testing: IO_TESTS
+2/3 Test: IO_TESTS
+Command: "/Users/derek/C/engine/bin/io_tests"
+Directory: /Users/derek/C/engine/cmake
+"IO_TESTS" start time: Jan 23 10:59 EST
+Output:
+----------------------------------------------------------
+
+TEST 1: IO loading texture [32msucceeded[0m
+
+TEST 2: IO saving and loading heap [32msucceeded[0m
+
+2 out of 2 tests succeeded.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"IO_TESTS" end time: Jan 23 10:59 EST
+"IO_TESTS" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/3 Testing: SDL_WRAPPER_TESTS
+3/3 Test: SDL_WRAPPER_TESTS
+Command: "/Users/derek/C/engine/bin/sdl_wrapper_tests"
+Directory: /Users/derek/C/engine/cmake
+"SDL_WRAPPER_TESTS" start time: Jan 23 10:59 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.15 sec
+----------------------------------------------------------
+Test Failed.
+"SDL_WRAPPER_TESTS" end time: Jan 23 10:59 EST
+"SDL_WRAPPER_TESTS" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jan 23 10:59 EST

@@ -60,13 +60,87 @@ CMAKE_SOURCE_DIR = /Users/derek/C/engine/cmake
 CMAKE_BINARY_DIR = /Users/derek/C/engine/cmake
 
 #=============================================================================
+# Target rules for target CMakeFiles/sdl_wrapper_tests.dir
+
+# All Build rule for target.
+CMakeFiles/sdl_wrapper_tests.dir/all: CMakeFiles/engine.dir/all
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/depend
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/derek/C/engine/cmake/CMakeFiles --progress-num=22,23 "Built target sdl_wrapper_tests"
+.PHONY : CMakeFiles/sdl_wrapper_tests.dir/all
+
+# Include target in all.
+all: CMakeFiles/sdl_wrapper_tests.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/sdl_wrapper_tests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 16
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/sdl_wrapper_tests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 0
+.PHONY : CMakeFiles/sdl_wrapper_tests.dir/rule
+
+# Convenience name for target.
+sdl_wrapper_tests: CMakeFiles/sdl_wrapper_tests.dir/rule
+
+.PHONY : sdl_wrapper_tests
+
+# clean rule for target.
+CMakeFiles/sdl_wrapper_tests.dir/clean:
+	$(MAKE) -f CMakeFiles/sdl_wrapper_tests.dir/build.make CMakeFiles/sdl_wrapper_tests.dir/clean
+.PHONY : CMakeFiles/sdl_wrapper_tests.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/sdl_wrapper_tests.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/io_tests.dir
+
+# All Build rule for target.
+CMakeFiles/io_tests.dir/all: CMakeFiles/engine.dir/all
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/depend
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/derek/C/engine/cmake/CMakeFiles --progress-num=15,16 "Built target io_tests"
+.PHONY : CMakeFiles/io_tests.dir/all
+
+# Include target in all.
+all: CMakeFiles/io_tests.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/io_tests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 16
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/io_tests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 0
+.PHONY : CMakeFiles/io_tests.dir/rule
+
+# Convenience name for target.
+io_tests: CMakeFiles/io_tests.dir/rule
+
+.PHONY : io_tests
+
+# clean rule for target.
+CMakeFiles/io_tests.dir/clean:
+	$(MAKE) -f CMakeFiles/io_tests.dir/build.make CMakeFiles/io_tests.dir/clean
+.PHONY : CMakeFiles/io_tests.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/io_tests.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/mem_tests.dir
 
 # All Build rule for target.
 CMakeFiles/mem_tests.dir/all: CMakeFiles/engine.dir/all
 	$(MAKE) -f CMakeFiles/mem_tests.dir/build.make CMakeFiles/mem_tests.dir/depend
 	$(MAKE) -f CMakeFiles/mem_tests.dir/build.make CMakeFiles/mem_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/derek/C/engine/cmake/CMakeFiles --progress-num=15,16 "Built target mem_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/derek/C/engine/cmake/CMakeFiles --progress-num=17,18 "Built target mem_tests"
 .PHONY : CMakeFiles/mem_tests.dir/all
 
 # Include target in all.
@@ -93,6 +167,43 @@ CMakeFiles/mem_tests.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/mem_tests.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/project_creator.dir
+
+# All Build rule for target.
+CMakeFiles/project_creator.dir/all: CMakeFiles/engine.dir/all
+	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/depend
+	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/derek/C/engine/cmake/CMakeFiles --progress-num=19,20,21 "Built target project_creator"
+.PHONY : CMakeFiles/project_creator.dir/all
+
+# Include target in all.
+all: CMakeFiles/project_creator.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/project_creator.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 17
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/project_creator.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 0
+.PHONY : CMakeFiles/project_creator.dir/rule
+
+# Convenience name for target.
+project_creator: CMakeFiles/project_creator.dir/rule
+
+.PHONY : project_creator
+
+# clean rule for target.
+CMakeFiles/project_creator.dir/clean:
+	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/clean
+.PHONY : CMakeFiles/project_creator.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/project_creator.dir/clean
 
 .PHONY : clean
 
@@ -130,43 +241,6 @@ CMakeFiles/engine.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/engine.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/project_creator.dir
-
-# All Build rule for target.
-CMakeFiles/project_creator.dir/all: CMakeFiles/engine.dir/all
-	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/depend
-	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/derek/C/engine/cmake/CMakeFiles --progress-num=17,18,19 "Built target project_creator"
-.PHONY : CMakeFiles/project_creator.dir/all
-
-# Include target in all.
-all: CMakeFiles/project_creator.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/project_creator.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 17
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/project_creator.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/derek/C/engine/cmake/CMakeFiles 0
-.PHONY : CMakeFiles/project_creator.dir/rule
-
-# Convenience name for target.
-project_creator: CMakeFiles/project_creator.dir/rule
-
-.PHONY : project_creator
-
-# clean rule for target.
-CMakeFiles/project_creator.dir/clean:
-	$(MAKE) -f CMakeFiles/project_creator.dir/build.make CMakeFiles/project_creator.dir/clean
-.PHONY : CMakeFiles/project_creator.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/project_creator.dir/clean
 
 .PHONY : clean
 

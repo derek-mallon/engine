@@ -5,3 +5,5 @@
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
 add_test(MEM_TESTS "../bin/mem_tests")
+add_test(IO_TESTS "../bin/io_tests")
+add_test(SDL_WRAPPER_TESTS "../bin/sdl_wrapper_tests")

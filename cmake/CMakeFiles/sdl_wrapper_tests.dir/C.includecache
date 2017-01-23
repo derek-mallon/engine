@@ -14,9 +14,25 @@ stdio.h
 stdlib.h
 -
 
+../include/geometry.h
+
 ../include/mem.h
 stdlib.h
 -
+utils.h
+../include/utils.h
+error.h
+../include/error.h
+
+../include/sdl_wrapper.h
+mem.h
+../include/mem.h
+SDL2/Sdl.h
+-
+stdint.h
+-
+geometry.h
+../include/geometry.h
 utils.h
 ../include/utils.h
 error.h
@@ -28,13 +44,11 @@ stdint.h
 stdio.h
 -
 
-/Users/derek/C/engine/tests/mem_tests.c
+/Users/derek/C/engine/tests/sdl_wrapper_tests.c
 tester.h
 /Users/derek/C/engine/tests/tester.h
-mem.h
-/Users/derek/C/engine/tests/mem.h
-string.h
--
+sdl_wrapper.h
+/Users/derek/C/engine/tests/sdl_wrapper.h
 
 /Users/derek/C/engine/tests/tester.h
 stdio.h

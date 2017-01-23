@@ -43,6 +43,23 @@ target_link_libraries(mem_tests engine)
 
 add_test(MEM_TESTS ../bin/mem_tests)
 
+include_directories("${PROJECT_SOURCE_DIR}/../include")
+
+add_executable(io_tests ../tests/io_tests.c)
+
+target_link_libraries(io_tests engine)
+
+add_test(IO_TESTS ../bin/io_tests)
+
+include_directories("${PROJECT_SOURCE_DIR}/../include")
+
+add_executable(sdl_wrapper_tests ../tests/sdl_wrapper_tests.c)
+
+target_link_libraries(sdl_wrapper_tests engine)
+
+add_test(SDL_WRAPPER_TESTS ../bin/sdl_wrapper_tests)
+
+
 
 
 

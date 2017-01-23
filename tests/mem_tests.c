@@ -1,4 +1,4 @@
-#include <tester.h>
+#include "tester.h"
 #include "mem.h"
 #include <string.h>
 
@@ -8,13 +8,14 @@ MEM_heap_manager test_heap_manager;
 MEM_handle handle;
 MEM_heap mem_heap;
 
+
 char buff[50];
 
 enum{
     INT
 };
-void test_init_fun(MEM_heap_template* templates,void* data){
-    templates[INT] = MEM_create_heap_template(int,100);
+void test_init_fun(MEM_heap* templates,MEM_heap* data){
+    MEM_get_item_m(MEM_heap_template,templates,INT) = MEM_create_heap_template(int,100);
 }
 
 void add_int(){
@@ -25,6 +26,8 @@ void add_int(){
 }
 
 ENVIROMENT_SETUP{ //Run before each unit test.
+    MEM_heap empty;
+    MEM_create_heap_manager("test manager",1,test_init_fun,&empty,&test_heap_manager);
 }
 
 ENVIROMENT_CLEANUP{ //Run after each unit test.
@@ -32,6 +35,9 @@ ENVIROMENT_CLEANUP{ //Run after each unit test.
 }
 
 TESTS
+
+    size_t index;
+
     UNIT_TEST_START("create a heap template")
         test_heap_template = MEM_create_heap_template(int,100);
         ASSERT(test_heap_template.size_of_object == sizeof(int));
@@ -39,7 +45,6 @@ TESTS
         ASSERT(strcmp(test_heap_template.name,"int") == 0);
     UNIT_TEST_END
     UNIT_TEST_START("create heap_manager with one template")
-        MEM_create_heap_manager("test manager",1,test_init_fun,NULL,&test_heap_manager);
         ASSERT(test_heap_manager.number_of_heaps == 1);
         ASSERT(test_heap_manager.heaps[INT].size_of_object == sizeof(int));
         ASSERT(test_heap_manager.heaps[INT].capacity == 100);
@@ -48,11 +53,10 @@ TESTS
         ASSERT(strcmp(test_heap_manager.heaps[INT].name,"int") == 0);
     UNIT_TEST_END
     UNIT_TEST_START("assigning a value")
-        MEM_create_heap_manager("test manager",1,test_init_fun,NULL,&test_heap_manager);
-        size_t index;
         handle = MEM_create_handle_from_manager(&test_heap_manager,INT,index);
         MEM_get_item(int,handle) = 5;
         ASSERT(MEM_get_item(int,handle) == 5);
+        MEM_destroy_heap_manager(&test_heap_manager);
     UNIT_TEST_END
     UNIT_TEST_START("serializing and deserializing a heap")
         MEM_heap test_heap,test_heap2;
@@ -72,8 +76,6 @@ TESTS
     UNIT_TEST_END
     UNIT_TEST_START("serializing and deserializing an entire heap manager")
         MEM_heap_manager test_heap_manager2;
-        MEM_create_heap_manager("test manager",1,test_init_fun,NULL,&test_heap_manager);
-        
         add_int();
         size_t pos2 = 0;
         void* ptr1 = malloc(MEM_get_heap_manager_binary_size(&test_heap_manager));

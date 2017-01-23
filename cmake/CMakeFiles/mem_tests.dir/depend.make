@@ -5,4 +5,5 @@ CMakeFiles/mem_tests.dir/Users/derek/C/engine/tests/mem_tests.c.o: ../include/er
 CMakeFiles/mem_tests.dir/Users/derek/C/engine/tests/mem_tests.c.o: ../include/mem.h
 CMakeFiles/mem_tests.dir/Users/derek/C/engine/tests/mem_tests.c.o: ../include/utils.h
 CMakeFiles/mem_tests.dir/Users/derek/C/engine/tests/mem_tests.c.o: /Users/derek/C/engine/tests/mem_tests.c
+CMakeFiles/mem_tests.dir/Users/derek/C/engine/tests/mem_tests.c.o: /Users/derek/C/engine/tests/tester.h
 

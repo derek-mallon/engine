@@ -87,7 +87,7 @@ ERR_error MEM_create_heap(MEM_heap_template template,MEM_heap* result);
 
 ERR_error MEM_destroy_heap(MEM_heap* h);
 
-ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap_template*,void*),void* data,MEM_heap_manager* manager);
+ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,MEM_heap*),MEM_heap* data,MEM_heap_manager* manager);
 
 ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager);
 
@@ -119,13 +119,13 @@ void MEM_init(MEM_heap_manager* heap_manager);
  * @param i the index which will returned.
  * @return the object (not a copy).
  */
-#define MEM_get_item(type,handle) (((type*)&(handle.heap)->ptr)[handle.index])
+#define MEM_get_item(type,handle) (*(type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
 
-#define MEM_get_item_p(type,handle) &((type*)&(handle.heap)->ptr)[handle.index]
+#define MEM_get_item_p(type,handle) ((type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
 
-#define MEM_get_item_m(type,heap,i) (((type*)&(heap)->ptr)[i])
+#define MEM_get_item_m(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
 
-#define MEM_get_item_m_p(type,heap,i) &((type*)&(heap)->ptr)[i]
+#define MEM_get_item_m_p(type,heap,i) (type*)&(heap)->ptr[i*((heap)->size_of_object)]
 
 #define MEM_get_heap(m,i) &m->heaps[i]
 

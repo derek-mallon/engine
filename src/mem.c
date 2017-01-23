@@ -44,19 +44,16 @@ ERR_error MEM_destroy_heap(MEM_heap* h){
     return ERR_GOOD;
 }
 
-ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap_template*,void*),void* init_data,MEM_heap_manager* manager){
+ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,MEM_heap*),MEM_heap* init_data,MEM_heap_manager* manager){
 
     FILE *data_file,*template_info_file,*template_data_file,*data,*alive_table;
     char buff[UTI_DEFAULT_NAME_SIZE];
     char* c;
     long number_of_templates;
     int i,j;
-
-    MEM_heap_template* templates = malloc(sizeof(MEM_heap_template)*count);
-    if(templates == NULL){
-        return ERR_MEM;
-    }
-    heap_init_func(templates,init_data);
+    MEM_heap templates;
+    MEM_create_heap(MEM_create_heap_template(MEM_heap_template,count),&templates);
+    heap_init_func(&templates,init_data);
     MEM_heap* heaps;
     strcpy(manager->name,name);
 
@@ -64,14 +61,15 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
 
     ERR_error result;
     for(i=0;i<count;i++){
-        if((result = MEM_create_heap(templates[i],&heaps[i])) != ERR_GOOD){
+        if((result = MEM_create_heap(MEM_get_item_m(MEM_heap_template,&templates,i),&heaps[i])) != ERR_GOOD){
             return result;
         }
     }
 
+    MEM_destroy_heap(&templates);
+
     manager->heaps = heaps;
     manager->number_of_heaps = count;
-    free(templates);
     return ERR_GOOD;
 
 }
@@ -105,7 +103,7 @@ ERR_error MEM_add_top(MEM_heap* heap,size_t* index){
 }
 
 size_t MEM_get_heap_binary_size(MEM_heap* heap){
-    return (sizeof(size_t)*4+sizeof(heap->name)+sizeof(uint8_t)*heap->capacity+sizeof(size_t)*heap->capacity+heap->size_of_object*heap->capacity);
+    return (sizeof(size_t)*3+sizeof(heap->name)+heap->size_of_object*heap->capacity);
 }
 
 size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager){

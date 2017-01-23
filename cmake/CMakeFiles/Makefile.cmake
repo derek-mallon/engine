@@ -51,7 +51,9 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/sdl_wrapper_tests.dir/DependInfo.cmake"
+  "CMakeFiles/io_tests.dir/DependInfo.cmake"
   "CMakeFiles/mem_tests.dir/DependInfo.cmake"
-  "CMakeFiles/engine.dir/DependInfo.cmake"
   "CMakeFiles/project_creator.dir/DependInfo.cmake"
+  "CMakeFiles/engine.dir/DependInfo.cmake"
   )

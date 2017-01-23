@@ -14,6 +14,7 @@ int main(int argc,char* argv[]){
                 conf = PRJ_default_conf("default");
             }
             PRJ_create_proj(&conf);
+            
         }else if(strcmp(argv[1],"--build") == 0){
             PRJ_project_conf* conf;
             PRJ_create_proj_binary(conf);
@@ -25,6 +26,9 @@ int main(int argc,char* argv[]){
         TERM_println("\tproject --build builds a project if found");
     }
 
+    
 }
+
+
 
 
