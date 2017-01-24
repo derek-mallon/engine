@@ -13,7 +13,7 @@ struct AST_data{
     WPR_sdl_data* sdl_wrapper_data;
 };
 
-void AST_lib_open(LIB_HANDLE* handle,UTI_str str);
+LIB_HANDLE AST_lib_open(UTI_str str);
 
 void AST_lib_close(LIB_HANDLE handle);
 void AST_init(MEM_heap_manager* manager);

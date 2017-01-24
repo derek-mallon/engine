@@ -9,11 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}")
 
+set(CMAKE_C_FLAGS_DEBUG "-g -DDEBUG")
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_Image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-set(ENGINE_SOURCES ../src/asset.c ../src/component.c ../src/engine.c ../src/file_handling.c ../src/geometry.c ../src/io.c ../src/mem.c ../src/module_startup_shutdown.c ../src/physics.c ../src/render.c ../src/sdl_wrapper.c ../src/term.c ../src/utils.c)
+set(ENGINE_SOURCES ../src/asset.c ../src/component.c ../src/engine.c ../src/file_handling.c ../src/geometry.c ../src/io.c ../src/mem.c ../src/module_startup_shutdown.c ../src/physics.c ../src/render.c ../src/sdl_wrapper.c ../src/term.c ../src/utils.c ../src/hashtable.c)
 
 include_directories("${PROJECT_SOURCE_DIR}/../include" ${SDL2_INCLUDE_DIR} ${SDL_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 
@@ -58,6 +60,16 @@ add_executable(sdl_wrapper_tests ../tests/sdl_wrapper_tests.c)
 target_link_libraries(sdl_wrapper_tests engine)
 
 add_test(SDL_WRAPPER_TESTS ../bin/sdl_wrapper_tests)
+
+include_directories("${PROJECT_SOURCE_DIR}/../include")
+
+add_executable(file_handling_tests ../tests/file_handling_tests.c)
+
+target_link_libraries(file_handling_tests engine)
+
+add_test(FILE_HANDLING_TESTS ../bin/file_handling_tests)
+
+
 
 
 

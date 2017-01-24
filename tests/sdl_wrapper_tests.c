@@ -2,8 +2,8 @@
 #include "sdl_wrapper.h"
 WPR_sdl_data data;
 MEM_heap_manager mem;
-void heap_init(MEM_heap_template* templates,void* data){
-    templates[0] = MEM_create_heap_template(WPR_texture_ptr,10);
+void heap_init(MEM_heap* templates,MEM_heap* data){
+    MEM_get_item_m(MEM_heap_template,templates,0) = MEM_create_heap_template(WPR_texture_ptr,10);
 }
 ENVIROMENT_SETUP{
     MEM_create_heap_manager("main_mem",1,heap_init,NULL,&mem);

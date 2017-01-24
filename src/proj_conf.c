@@ -39,21 +39,23 @@ void PRJ_create_proj_binary(PRJ_project_conf* conf){
     size_t number_of_components = FIL_get_number_of_files_in_dir(conf->component_dir.buff);
     MEM_create_heap(MEM_create_heap_template(MEM_heap_template,number_of_components),&component_templates);
     int i;
-    MEM_heap component_sources;
-    MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,number_of_components),&component_sources);
-    FIL_get_all_files(conf->component_dir.buff,&component_sources);
+    MEM_heap component_libs,component_lib_handles;
+    MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,number_of_components),&component_libs);
+    MEM_create_heap(MEM_create_heap_template(LIB_HANDLE,number_of_components),&component_lib_handles);
+    FIL_get_all_files(conf->component_dir.buff,&component_libs);
     for(i=0;i<component_templates.capacity;i++){
+        
     }
 
     UTI_buff_stor std_templates_path;
     UTI_concat(std_templates_path.buff,2,conf->base_path.buff,"/mem.data");
-    ERR_ASSERT(FIL_file_exits(std_templates_path.buff),"this file does not exist %s",std_templates_path.buff)
+    ERR_ASSERT(FIL_file_exits(std_templates_path.buff),"this file does not exist %s",std_templates_path.buff);
     FIL_path path = FIL_create_path(std_templates_path.buff,FIL_TYPE_BINARY,FIL_MODE_READ);
     MEM_heap std_templates;
     IO_load_heap_binary(&path,&std_templates);
 
 
     MEM_destroy_heap(&std_templates);
-    MEM_destroy_heap(&component_sources);
+    MEM_destroy_heap(&component_libs);
 }
 

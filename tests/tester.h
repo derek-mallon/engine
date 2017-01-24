@@ -40,7 +40,7 @@
 #define END_TESTS printf("\n%d out of %d tests succeeded.\n",succeeded_tests,test_counter); if(succeeded_tests != test_counter){return 1;}return 0;}
 #define UNIT_TEST_START(name) current_test = name; enviroment_setup(); succeeded = 1; test_counter++;
 
-#define UNIT_TEST_END if(succeeded){succeeded_tests++; printf("\nTEST %d: %s %ssucceeded%s\n",test_counter,current_test,GREEN_COLOR_CODE,NORMAL_COLOR_CODE);}else{printf("\nTEST %d: %s %sfailed%s\n", test_counter,current_test,RED_COLOR_CODE,NORMAL_COLOR_CODE);} enviroment_cleanup();
+#define UNIT_TEST_END if(succeeded){succeeded_tests++; printf("\nUNIT TEST %d: %s %ssucceeded%s\n",test_counter,current_test,GREEN_COLOR_CODE,NORMAL_COLOR_CODE);}else{printf("\nUNIT TEST %d: %s %sfailed%s\n", test_counter,current_test,RED_COLOR_CODE,NORMAL_COLOR_CODE);} enviroment_cleanup();
 
 #define ASSERT(statement) if(statement && succeeded != 0){succeeded = 1;}else{succeeded = 0;}dummy()
 

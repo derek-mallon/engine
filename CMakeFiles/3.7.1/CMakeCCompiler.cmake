@@ -64,5 +64,5 @@ endif()
 
 
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/local/lib;/Users/derek/C/engine/cmake;/usr/lib")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/local/lib;/Users/derek/C/engine;/usr/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "/Library/Frameworks;/System/Library/Frameworks")

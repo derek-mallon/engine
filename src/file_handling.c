@@ -65,13 +65,13 @@ ERR_error FIL_file_open(FIL_path* p){
 }
 
 void FIL_file_close(FIL_path* p){
-    ERR_ASSERT((p->file != NULL),"null file")
+    ERR_ASSERT((p->file != NULL),"null file");
     fclose(p->file);
 }
 
 
 size_t FIL_file_size_binary(FIL_path* p){
-    ERR_ASSERT((p->file != NULL),"null file")
+    ERR_ASSERT((p->file != NULL),"null file");
     size_t size;
     fseek(p->file,0,SEEK_END);
     size = ftell(p->file);
@@ -82,11 +82,11 @@ size_t FIL_file_size_binary(FIL_path* p){
 
 void FIL_mkdir(UTI_str p){
 #ifdef UNIX
-    ERR_ASSERT(access(p,F_OK) == -1,"directory already exists")
+    ERR_ASSERT(access(p,F_OK) == -1,"directory already exists");
     mkdir(p,0777);
 #endif
 #ifdef WIN
-    ERR_ASSERT(PathFileExist(p) == FALSE,"directory already exists") 
+    ERR_ASSERT(PathFileExist(p) == FALSE,"directory already exists");
     CreateDirectory(p,NULL);
 #endif
 }
@@ -118,8 +118,8 @@ uint8_t FIL_file_is_dir(UTI_str p){
 }
 
 void FIL_remove_file(UTI_str p){
-    ERR_ASSERT(FIL_file_exits(p),"file %s does not exist",p) 
-    ERR_ASSERT(!FIL_file_is_dir(p),"file %s is directory",p)
+    ERR_ASSERT(FIL_file_exits(p),"file %s does not exist",p);
+    ERR_ASSERT(!FIL_file_is_dir(p),"file %s is directory",p);
     remove(p);
 }
 
@@ -214,7 +214,7 @@ ERR_error FIL_read_binary(FIL_path* path,MEM_handle handle){
     ERR_ASSERT(path->file != NULL,"file with path %s not opened",path->raw);
     ERR_ASSERT(path->mode & FIL_MODE_READ,"file with path %s is not readable, the files mode is %s",path->raw,path->ops);
     size_t result = fread(MEM_get_item_m_p(void,handle.heap,handle.index),handle.heap->size_of_object,1,path->file);
-    if(result != handle.heap->size_of_object){
+    if(result != handle.heap->capacity){
         return ERR_BAD;
     }
     return ERR_GOOD;

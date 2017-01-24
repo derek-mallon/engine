@@ -1,4 +1,4 @@
-#include <tester.h>
+#include "tester.h"
 #include "file_handling.h"
 #include <string.h>
 #include "mem.h"
@@ -8,9 +8,6 @@ ENVIROMENT_SETUP{
 ENVIROMENT_CLEANUP{
 }
 
-void heap_init(MEM_heap_template* templates,void* data){
-    templates[0] = MEM_create_heap_template(UTI_buff_stor,10);
-}
 TESTS
     UNIT_TEST_START("create path")
         path = FIL_create_path("test.txt",FIL_TYPE_TEXT,FIL_MODE_WRITE);
@@ -23,7 +20,7 @@ TESTS
         //ASSERT(strcmp(path.ops,"r+b") == 0);
     UNIT_TEST_END
     UNIT_TEST_START("file exists")
-        ASSERT(FIL_file_exits("bin/file_handling_tests"));
+        ASSERT(FIL_file_exits("../bin/file_handling_tests"));
     UNIT_TEST_END
     UNIT_TEST_START("Open a new file")
         path = FIL_create_path("test.tmp",FIL_TYPE_TEXT,FIL_MODE_WRITE);
@@ -35,15 +32,14 @@ TESTS
     UNIT_TEST_START("find all files in dir")
         path = FIL_create_path("test.tmp",FIL_TYPE_TEXT,FIL_MODE_WRITE);
         FIL_file_open(&path);
-        MEM_heap_manager manager;
-        MEM_create_heap_manager("main",1,heap_init,NULL,&manager);
-        FIL_get_all_files(".",&manager.heaps[0]);
+        MEM_heap heap;
+        MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,10),&heap);
+        FIL_get_all_files("../bin",&heap);
         int i;
         uint8_t found = 0;
-        for(i=0;i<manager.heaps[0].top;i++){
-            MEM_handle handle = MEM_create_handle_from_manager(&manager,0,i);
-            printf("%s",MEM_get_item(UTI_buff_stor,handle).buff);
-            if(strcmp(MEM_get_item(UTI_buff_stor,handle).buff,"test.tmp") == 0){
+        for(i=0;i<heap.top;i++){
+            MEM_handle handle = MEM_create_handle_from_heap(&heap,i);
+            if(strcmp(MEM_get_item(UTI_buff_stor,handle).buff,"file_handling_tests") == 0){
                 found = 1;
             }
         }
@@ -70,7 +66,7 @@ TESTS
         ASSERT(strcmp(MEM_get_item_m_p(char,&mem_heap,0),"test words") == 0);
     UNIT_TEST_END
     UNIT_TEST_START("check if dir")
-        path = FIL_create_path("bin",FIL_TYPE_DIR,FIL_MODE_READ);
+        path = FIL_create_path("../bin",FIL_TYPE_DIR,FIL_MODE_READ);
         ASSERT(FIL_file_is_dir(path.raw));
         path = FIL_create_path("file_handling_tests",FIL_TYPE_DIR,FIL_MODE_READ);
         ASSERT(!FIL_file_is_dir(path.raw));

@@ -181,14 +181,14 @@ ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM
     return ERR_GOOD;
 }
 MEM_handle MEM_create_handle_from_manager(MEM_heap_manager* manager,size_t index_of_heap,size_t index){
-    ERR_ASSERT(manager->number_of_heaps > index_of_heap,"heap does not exist at the index %lu",index_of_heap)
-    ERR_ASSERT(manager->heaps[index_of_heap].capacity > index,"item does not exit at the index %lu in the heap",index)
+    ERR_ASSERT(manager->number_of_heaps > index_of_heap,"heap does not exist at the index %lu",index_of_heap);
+    ERR_ASSERT(manager->heaps[index_of_heap].capacity > index,"item does not exit at the index %lu in the heap",index);
     MEM_handle handle = {&manager->heaps[index_of_heap],index};
     return handle;
 }
 
 MEM_handle MEM_create_handle_from_heap(MEM_heap* heap,size_t index){
-    ERR_ASSERT(heap->capacity > index,"item does not exit at the index %lu in the heap",index);
+    ERR_ASSERT(heap->capacity > index,"item does not exist at the index %lu in the heap, capacity is %lu",index,heap->capacity);
     MEM_handle handle = {heap,index};
     return handle;
 }

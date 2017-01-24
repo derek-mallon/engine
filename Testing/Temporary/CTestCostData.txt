@@ -1,3 +1,0 @@
-MEM_TESTS 0 0
----
-MEM_TESTS

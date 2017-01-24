@@ -5,9 +5,10 @@
 
 
 
-void AST_lib_open(LIB_HANDLE* handle,UTI_str str){
-    *handle = dlopen(str,RTLD_LAZY);
-    ERR_ASSERT(*handle != NULL,"could not open lib at %s",str)
+LIB_HANDLE AST_lib_open(UTI_str str){
+    LIB_HANDLE handle = dlopen(str,RTLD_LAZY);
+    ERR_ASSERT(handle != NULL,"could not open lib at %s",str);
+    return handle;
 }
 
 void AST_lib_close(LIB_HANDLE handle){
@@ -30,9 +31,11 @@ void AST_init(MEM_heap_manager* manager){
         WPR_add_texture(data->sdl_wrapper_data,surface,NULL);
     }
     //load all of the libs for the components in order that they appear in the libs path heap.
+    /*
     for(i=0;i<data->component_lib_paths->capacity;i++){
         AST_lib_open(MEM_get_item_m_p(LIB_HANDLE,lib_handles,i),MEM_get_item_m(UTI_buff_stor,data->component_lib_paths,i).buff);
     }
+    */
     //TODO: Audio loading
     //FILE: tracking and live reload debug mode.
 

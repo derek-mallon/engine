@@ -1,11 +1,13 @@
 #include "io.h"
 #include "error.h"
 #include <SDL2/SDL_image.h>
+#include "sdl_wrapper.h"
 
 static IO_status IO_STATUS = IO_CLOSED;
 void IO_init(){
-    ERR_ASSERT(WPR_get_status() == WPR_READY,"SDL wrapper not inited")
-    ERR_ASSERT(!IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG,"Couldn't init SDL_image: %s",SDL_GetError());
+    ERR_ASSERT(WPR_get_status() == WPR_READY,"SDL wrapper not inited");
+    int result = IMG_Init(IMG_INIT_PNG);
+    ERR_ASSERT((result == IMG_INIT_PNG),"Couldn't init SDL_image: %s",IMG_GetError());
     IO_STATUS = IO_READY;
 }
 
@@ -38,7 +40,7 @@ ERR_error IO_load_manager_binary(FIL_path* path,MEM_heap_manager* manager){
         return result;
     }
 
-    if((result = MEM_deserialize_heap_manager(manager,&pos,MEM_create_handle_from_heap(&mem_heap,0)))){
+    if((result = MEM_deserialize_heap_manager(manager,&pos,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
         return result;
     }
     MEM_destroy_heap(&mem_heap);
@@ -76,10 +78,10 @@ ERR_error IO_load_heap_binary(FIL_path* path,MEM_heap* heap){
         FIL_file_close(path);
         return result;
     }
-    if((result = FIL_read_binary(path,MEM_create_handle_from_heap(&mem_heap,0)))){
+    if((result = FIL_read_binary(path,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
         return result;
     }
-    if((result = MEM_deserialize_heap(heap,&pos,MEM_create_handle_from_heap(&mem_heap,0)))){
+    if((result = MEM_deserialize_heap(heap,&pos,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
         return result;
     }
     MEM_destroy_heap(&mem_heap);
