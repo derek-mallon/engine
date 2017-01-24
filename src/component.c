@@ -12,7 +12,13 @@ typedef char** (*COM_get_messages)();
 
 typedef struct COM_component COM_component;
 typedef struct COM_data COM_data;
+typedef struct COM_component_mem_template COM_component_mem_template;
 
+
+struct COM_component_mem_template{
+    MEM_heap_template template;
+    size_t number_of_messages;
+};
 struct COM_component{
     COM_init_func init_func;
     COM_update_func update_func;

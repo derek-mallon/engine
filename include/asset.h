@@ -4,6 +4,8 @@
 #include "error.h"
 #include "sdl_wrapper.h"
 #include "all.h"
+
+typedef void* AST_FUNC;
 typedef struct AST_data AST_data;
 
 struct AST_data{
@@ -14,6 +16,7 @@ struct AST_data{
 };
 
 LIB_HANDLE AST_lib_open(UTI_str str);
+AST_FUNC AST_get_func(LIB_HANDLE handle,UTI_str str);
 
 void AST_lib_close(LIB_HANDLE handle);
 void AST_init(MEM_heap_manager* manager);

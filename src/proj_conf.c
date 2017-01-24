@@ -24,6 +24,50 @@ void PRJ_create_proj_mem(){
 
 }
 
+/**
+ * NOTE: where ever it says runtime it still means the memory is loaded at the beginning of either a scene or the entire game itself.
+ * Memory layout is as follows:
+ * 1. System data
+ * -- WPR_system
+ * -- IO
+ * -- Asset 
+ * -- 
+ * 2. Asset Data ----> all Editable at runtime but must be loaded and cleaned up at run time.
+ * -- Wav files {type: WPR_audio_buff,str path} 
+ * -- Textures  {type: WPR_texture_ptr , str path} loaded and cleanup at runtime.
+ * -- Shaders ---> get compiled into the correct type
+ * -- Prefab files ---> gets compiled down into the correct type (depends of the number of componets)
+ * 3. Component data   
+ * -- Component 1
+ * --- Component Standard data (init update destroy, size, and message number information) {type: COM_component} --------> Editable during run time
+ * --- Component Custom data[] (array for all of the components) {type: custom}
+ * --- Message 1 --------> Editable during run time {type void * (gets cast at runtime to the correct function pointer also get cleaned up at run time)}
+ * --- Message 2 --------> Editable during run time
+ * --- ......
+ * --- Message n
+ * -- Component 2
+ * --- Component Standard data (init update destroy, size, and message number information) --------> Editable during run time
+ * --- Component Custom data[] (array for all of the components)
+ * --- Messages ...
+ * -- Components ..   
+ * 4. Entity data
+ *
+ * This is all allocated and then saved to disk. When the game starts the memory manager is deserialized from a binary file.
+ *
+ * How components memory works.
+ * 1. Component is coded up as a standalone shared library with "get_size", "get_capacity", "get_number_of_messages", "get_messages", "init", "update", "destroy", and message functions.
+ * 2. During project creation the shared libraries are linked via dfcon (POSIX) and SharedLibary (win32). Then the project creator retieves the needed information about the struct size and or the number of messages .
+ * 3. During run time the linking is only needed for the procedures.
+ *
+ * How the memory is build
+ * 1. First make all of the needed mem_templates for the system 
+ * 2. Then make all of the needed mem_templates for the assets (currently only textures) this are loaded at run time by SDL_image but their pointers are saved before hand.
+ * 3. Then all of the components located in the components dir are searched for.
+ * 4. Loop over the components and create COM_component_mem_template for each one.
+ * 5. Loop over the COM_component_mem_templates and  create the correct mem_heaps for each one building out a mem_manager
+ * 6. Using the known number of components create the entity arrays.
+ * 6. Save the mem_manager to disk.
+ */
 void PRJ_create_proj_binary(PRJ_project_conf* conf){
     UTI_buff_stor base_data;
     UTI_concat(base_data.buff,2,conf->base_path.buff,"/",PRJ_ROOT_DATA);
@@ -37,14 +81,25 @@ void PRJ_create_proj_binary(PRJ_project_conf* conf){
     //Search for all of the component mem requirements
     MEM_heap component_templates;
     size_t number_of_components = FIL_get_number_of_files_in_dir(conf->component_dir.buff);
-    MEM_create_heap(MEM_create_heap_template(MEM_heap_template,number_of_components),&component_templates);
     int i;
-    MEM_heap component_libs,component_lib_handles;
+    MEM_heap component_libs;
     MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,number_of_components),&component_libs);
-    MEM_create_heap(MEM_create_heap_template(LIB_HANDLE,number_of_components),&component_lib_handles);
     FIL_get_all_files(conf->component_dir.buff,&component_libs);
-    for(i=0;i<component_templates.capacity;i++){
-        
+    for(i=0;i<number_of_components;i++){
+       LIB_HANDLE handle =AST_lib_open(MEM_get_item_m(UTI_buff_stor,&component_libs,i).buff);
+
+       size_t (*get_size)(void) = AST_get_func(handle,"get_size");
+       size_t comp_size = get_size();
+
+       size_t (*get_capacity)(void) = AST_get_func(handle,"get_capacity");
+       size_t comp_capacity = get_capacity();
+
+       size_t (*get_number_of_messages)(void) = AST_get_func(handle,"get_number_of_messages");
+       number_of_components += get_number_of_messages();
+
+
+       AST_lib_close(handle);
+
     }
 
     UTI_buff_stor std_templates_path;

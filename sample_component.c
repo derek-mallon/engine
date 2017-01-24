@@ -15,6 +15,7 @@ typedef enum HEALTH_MESSAGES{
 static const char* messages[]= {
     FOREACH_MESSAGE(GENERATE_STRING)
 };
+
 typedef struct health{
     float amount;
     uint32_t conditions;
