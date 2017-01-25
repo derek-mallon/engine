@@ -111,7 +111,7 @@ float WPR_get_fps(WPR_sdl_data* data);
 
 ERR_error WPR_turn_surface_into_texture(WPR_sdl_data* data,SDL_Surface* surface,WPR_texture_ptr* texture);
 
-ERR_error WPR_cleanup(WPR_sdl_data* data);
+ERR_error WPR_shutdown(WPR_sdl_data* data);
 
 WPR_status WPR_get_status();
 #endif

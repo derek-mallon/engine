@@ -164,11 +164,8 @@ ERR_error WPR_turn_surface_into_texture(WPR_sdl_data* data,SDL_Surface* surface,
     return ERR_GOOD;
 }
 
-ERR_error WPR_cleanup(WPR_sdl_data* data){
-    int i;
-    for(i=0;i<data->textures->top;i++){
-        SDL_DestroyTexture(MEM_get_item_m(WPR_texture_ptr,data->textures,i));
-    }
+ERR_error WPR_shutdown(WPR_sdl_data* data){
+    ERR_ASSERT(AST_get_status() == AST_CLOSED,"assets not closed yet");
     SDL_DestroyRenderer(data->renderer);
     SDL_DestroyWindow(data->window);
     data->renderer = NULL;

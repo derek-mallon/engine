@@ -87,7 +87,7 @@ ERR_error MEM_create_heap(MEM_heap_template template,MEM_heap* result);
 
 ERR_error MEM_destroy_heap(MEM_heap* h);
 
-ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,MEM_heap*),MEM_heap* data,MEM_heap_manager* manager);
+ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,void*),void* data,MEM_heap_manager* manager);
 
 ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager);
 

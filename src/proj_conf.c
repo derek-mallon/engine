@@ -6,8 +6,8 @@
 #include "component.h"
 #include "sdl_wrapper.h"
 
-PRJ_project_conf PRJ_default_conf(UTI_str project_name){
-    PRJ_project_conf conf;
+ALL_info PRJ_default_conf(UTI_str project_name){
+    ALL_info conf;
     UTI_concat(conf.base_path.buff,2,"./",project_name);
     UTI_concat(conf.texture_dir.buff,2,conf.base_path.buff,"/textures");
     UTI_concat(conf.component_dir.buff,2,conf.base_path.buff,"/components");
@@ -16,7 +16,7 @@ PRJ_project_conf PRJ_default_conf(UTI_str project_name){
     return conf;
 }
 
-void PRJ_create_proj(PRJ_project_conf* conf){
+void PRJ_create_proj(ALL_info* conf){
    UTI_concat(conf->mem_binary.buff,2,conf->bin_dir.buff,"/main.binary");
    UTI_concat(conf->self.buff,2,conf->bin_dir.buff,"/proj_conf.binary");
    FIL_mkdir(conf->base_path.buff);
@@ -76,7 +76,7 @@ void PRJ_create_proj_mem(){
  */
 typedef struct PRJ_mem_init_data PRJ_mem_init_data;
 struct PRJ_mem_init_data{
-    PRJ_project_conf conf;
+    ALL_info conf;
     size_t number_of_textures;
     size_t number_of_audio_files;
     size_t number_of_components;
@@ -84,12 +84,12 @@ struct PRJ_mem_init_data{
     MEM_heap component_mem_templates;
 };
 
-void PRJ_mem_init(MEM_heap* templates,MEM_heap* data){
+void PRJ_mem_init(MEM_heap* templates,void* data){
     size_t index = MEM_LOC_TOTAL;
     int i;
     int j;
-    PRJ_mem_init_data data_ = MEM_get_item_m(PRJ_mem_init_data,data,0);
-    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_PROJ_CONF) = MEM_create_heap_template(PRJ_project_conf,1);
+    PRJ_mem_init_data data_ = MEM_get_item_m(PRJ_mem_init_data,(MEM_heap*)data,0);
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_INFO) = MEM_create_heap_template(ALL_info,1);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_WPR_SDL_DATA) = MEM_create_heap_template(WPR_sdl_data,1);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_AST_DATA) = MEM_create_heap_template(AST_data,1);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_AUDIO_DATA) =  MEM_create_heap_template(AST_audio_data,data_.number_of_audio_files);
@@ -110,8 +110,9 @@ void PRJ_mem_init(MEM_heap* templates,MEM_heap* data){
 
     ERR_ASSERT(index==templates->capacity,"not enough mem set %lu %lu",index,templates->capacity);
     MEM_destroy_heap(&data_.component_mem_templates);
+    MEM_destroy_heap((MEM_heap*)data);
 }
-void PRJ_create_proj_binary(PRJ_project_conf conf){
+void PRJ_create_proj_binary(ALL_info conf){
 
     PRJ_mem_init_data data;
 
@@ -154,7 +155,6 @@ void PRJ_create_proj_binary(PRJ_project_conf conf){
     }
 
 
-    //Gets destroyed in mem manager create function
     MEM_create_heap(MEM_create_heap_template(PRJ_mem_init_data,1),&data_heap);
     MEM_get_item_m(PRJ_mem_init_data,&data_heap,0) = data;
     //Gets destroyed when saved
@@ -165,14 +165,14 @@ void PRJ_create_proj_binary(PRJ_project_conf conf){
     MEM_destroy_heap(&component_lib_paths);
 }
 
-ERR_error PRJ_load_proj_conf(UTI_str path,PRJ_project_conf* conf){
+ERR_error PRJ_load_proj_conf(UTI_str path,ALL_info* conf){
     FIL_path path_ = FIL_create_path(path,FIL_TYPE_BINARY,FIL_MODE_READ);
     MEM_heap mem;
     ERR_error result;
     if((result = IO_load_heap_binary(&path_,&mem)) != ERR_GOOD){
         return result;
     }
-    *conf =  MEM_get_item_m(PRJ_project_conf,&mem,0);
+    *conf =  MEM_get_item_m(ALL_info,&mem,0);
     MEM_destroy_heap(&mem);
     return ERR_GOOD;
 }

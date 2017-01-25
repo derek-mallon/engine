@@ -44,7 +44,7 @@ ERR_error MEM_destroy_heap(MEM_heap* h){
     return ERR_GOOD;
 }
 
-ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,MEM_heap*),MEM_heap* init_data,MEM_heap_manager* manager){
+ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,void*),void* init_data,MEM_heap_manager* manager){
 
     FILE *data_file,*template_info_file,*template_data_file,*data,*alive_table;
     char buff[UTI_DEFAULT_NAME_SIZE];
@@ -67,7 +67,6 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
     }
 
     MEM_destroy_heap(&templates);
-    MEM_destroy_heap(init_data);
 
     manager->heaps = heaps;
     manager->number_of_heaps = count;

@@ -34,6 +34,7 @@ struct AST_data{
     MEM_heap* texture_data;
     MEM_heap* audio_data;
     WPR_sdl_data* sdl_data;
+    ALL_info* info;
 };
 
 LIB_HANDLE AST_lib_open(UTI_str str);

@@ -167,6 +167,27 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
 #endif
 }
 
+ERR_error FIL_walk_over_all_files_in_dir(UTI_str dir,void(*walk)(UTI_str,void*),void* data){
+#ifdef UNIX
+    ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
+    DIR* directory;
+    struct dirent *entry;
+    if((directory = opendir(dir)) != NULL){
+        while((entry = readdir(directory)) != NULL){
+            if(!FIL_file_is_dir(entry->d_name)){
+                walk(entry->d_name,data);
+            }
+        }
+        closedir (directory);
+        return ERR_GOOD;
+    }
+    return ERR_MISSING_FILE;
+#endif
+#ifdef WIN
+    ERR_ASSERT(false,"UNIMPLMENTED CODE!")
+#endif
+}
+
 size_t FIL_get_number_of_dirs_in_dir(UTI_str p){
 #ifdef UNIX
     ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
