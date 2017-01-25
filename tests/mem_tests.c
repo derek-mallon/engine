@@ -31,7 +31,9 @@ ENVIROMENT_SETUP{ //Run before each unit test.
 }
 
 ENVIROMENT_CLEANUP{ //Run after each unit test.
-    MEM_destroy_heap_manager(&test_heap_manager);
+    if(test_heap_manager.number_of_heaps != 0){
+        MEM_destroy_heap_manager(&test_heap_manager);
+    }
 }
 
 TESTS
@@ -56,7 +58,6 @@ TESTS
         handle = MEM_create_handle_from_manager(&test_heap_manager,INT,index);
         MEM_get_item(int,handle) = 5;
         ASSERT(MEM_get_item(int,handle) == 5);
-        MEM_destroy_heap_manager(&test_heap_manager);
     UNIT_TEST_END
     UNIT_TEST_START("serializing and deserializing a heap")
         MEM_heap test_heap,test_heap2;
@@ -73,6 +74,7 @@ TESTS
         MEM_destroy_heap(&mem_heap);
         handle = MEM_create_handle_from_heap(&test_heap2,index);
         ASSERT(MEM_get_item(int,handle) == 5);
+        MEM_destroy_heap(&test_heap2);
     UNIT_TEST_END
     UNIT_TEST_START("serializing and deserializing an entire heap manager")
         MEM_heap_manager test_heap_manager2;

@@ -67,6 +67,7 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
     }
 
     MEM_destroy_heap(&templates);
+    MEM_destroy_heap(init_data);
 
     manager->heaps = heaps;
     manager->number_of_heaps = count;
@@ -75,6 +76,9 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
 }
 
 ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager){
+    if(manager->number_of_heaps == 0){
+        return ERR_MEM;
+    }
     int i;
     ERR_error result;
     for(i=0;i<manager->number_of_heaps;i++){
@@ -83,6 +87,7 @@ ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager){
         }
     }
     free(manager->heaps);
+    manager->number_of_heaps = 0;
     return ERR_GOOD;
 }
 
@@ -127,6 +132,22 @@ void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
 
     memcpy(&(data)[*pos],heap->ptr,(heap->size_of_object*heap->capacity));
     step_array(*pos,heap->size_of_object,heap->capacity);
+    MEM_destroy_heap(heap);
+}
+//Does not free the heap used internally
+static void MEM_serialize_heap_(MEM_heap* heap,size_t* pos,MEM_handle handle){
+    void* data = &handle.heap->ptr[handle.index];
+    *(size_t*)(&(data)[*pos]) = heap->size_of_object;
+    step_type(*pos,size_t);
+    *(size_t*)(&(data)[*pos]) = heap->capacity;
+    step_type(*pos,size_t);
+    *(size_t*)(&(data)[*pos]) = heap->top;
+    step_type(*pos,size_t);
+    strcpy((char*)(&(data)[*pos]),heap->name);
+    step_type(*pos,heap->name);
+
+    memcpy(&(data)[*pos],heap->ptr,(heap->size_of_object*heap->capacity));
+    step_array(*pos,heap->size_of_object,heap->capacity);
 }
 
 void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle){
@@ -138,8 +159,9 @@ void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle
     step_type(*pos,manager->name);
 
     for(i=0;i<manager->number_of_heaps;i++){
-        MEM_serialize_heap(&manager->heaps[i],pos,handle);
+        MEM_serialize_heap_(&manager->heaps[i],pos,handle);
     }
+    MEM_destroy_heap_manager(manager);
 }
 
 ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){

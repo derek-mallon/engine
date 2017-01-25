@@ -1,19 +1,21 @@
 #include "sdl_wrapper.h"
 #include "io.h"
 #include "file_handling.h"
-#include "mem.h"
 #include "utils.h"
-typedef enum MOD_heap_types MOD_heap_types;
-
-enum MOD_heap_types{
-    MOD_HT_TEXTURE_PTR,
-    MOD_HT_END
-};
-
-void heap_init(MEM_heap_template* templates){
-    templates[MOD_HT_TEXTURE_PTR] = MEM_create_heap_template(MOD_HT_TEXTURE_PTR,10);
+#include "asset.h"
+#include "proj_conf.h"
+ERR_error startup(MEM_heap_manager* manager,UTI_str path_to_conf){
+    PRJ_project_conf conf;
+    PRJ_load_proj_conf(path_to_conf,&conf);
+    FIL_path path = FIL_create_path(conf.mem_binary.buff,FIL_TYPE_BINARY,FIL_MODE_READ);
+    ERR_error result;
+    if((result = IO_load_manager_binary(&path,manager)) != ERR_GOOD){
+        return result;
+    }
+    MEM_get_item_m(PRJ_project_conf,MEM_get_heap(manager,MEM_LOC_PROJ_CONF),0) = conf;
+     
+    return ERR_GOOD;
 }
-void init(){
 
-
+void shutdown(MEM_heap_manager* manager){
 }

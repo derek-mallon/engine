@@ -12,10 +12,10 @@ void IO_init(){
 }
 
 
-ERR_error IO_load_texture_from_image(FIL_path path,SDL_Surface* surface){
-    surface= IMG_Load(path.raw);
+ERR_error IO_load_texture_from_image(UTI_str path,SDL_Surface* surface){
+    surface= IMG_Load(path);
     if(!surface){
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't load the image at %s: %s",path.raw,SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't load the image at %s: %s",path,SDL_GetError());
         return ERR_BAD;
     }
     return ERR_GOOD;

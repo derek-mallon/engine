@@ -89,7 +89,7 @@ void WPR_render_texture(WPR_sdl_data* data,size_t texture_index,GEO_vec2 pos);
 //NOTE rotation point is in pixels relative to the frame
 void WPR_render_frame(WPR_sdl_data* data,size_t texture_index,uint16_t x,uint16_t y,uint16_t width,uint16_t height,GEO_vec2 pos,GEO_vec2 given_rotation_point,double angle,WPR_flip flip);
 
-ERR_error WPR_init_sdl(WPR_sdl_data* data,WPR_init_sdl_data init,MEM_heap* textures);
+ERR_error WPR_init_sdl(WPR_init_sdl_data init,MEM_heap_manager* manager);
 
 WPR_sdl_layer_output WPR_input_loop(WPR_sdl_data* data);
 
@@ -109,7 +109,7 @@ uint32_t WPR_get_delta_time(WPR_sdl_data* data);
 
 float WPR_get_fps(WPR_sdl_data* data);
 
-ERR_error WPR_add_texture(WPR_sdl_data* data,SDL_Surface* surface,size_t* texture_index);
+ERR_error WPR_turn_surface_into_texture(WPR_sdl_data* data,SDL_Surface* surface,WPR_texture_ptr* texture);
 
 ERR_error WPR_cleanup(WPR_sdl_data* data);
 

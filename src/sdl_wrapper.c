@@ -1,5 +1,6 @@
 #include "sdl_wrapper.h"
 #include "utils.h"
+#include "all.h"
 
 #define DELTA_SAMPLE_SIZE 60
 
@@ -12,7 +13,9 @@ const float IDEAL_UNIT_X = 100;
 const float IDEAL_UNIT_Y = 100;
 
 
-ERR_error WPR_init_sdl(WPR_sdl_data* data,WPR_init_sdl_data init,MEM_heap* textures){
+ERR_error WPR_init_sdl(WPR_init_sdl_data init,MEM_heap_manager* manager){
+    MEM_handle sdl_data_handle= MEM_create_handle_from_manager(manager,MEM_LOC_WPR_SDL_DATA,0);
+    WPR_sdl_data* data = MEM_get_item_p(WPR_sdl_data,sdl_data_handle);
     int i,j;
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't init SDL: %s",SDL_GetError());
@@ -45,7 +48,7 @@ ERR_error WPR_init_sdl(WPR_sdl_data* data,WPR_init_sdl_data init,MEM_heap* textu
     data->delta_collection_count = 0;
     data->current_fps = 0;
     data->prev_tick = SDL_GetTicks();
-    data->textures = textures;
+    data->textures = MEM_get_heap(manager,MEM_LOC_TEXTURE_DATA);
     WPR_STATUS = WPR_READY;
     return ERR_GOOD;
 }
@@ -150,18 +153,14 @@ float WPR_get_fps(WPR_sdl_data* data){
     return data->current_fps;
 }
 
-ERR_error WPR_add_texture(WPR_sdl_data* data,SDL_Surface* surface,size_t* texture_index){
-    size_t index;
-    if(MEM_add_top(data->textures,&index) == ERR_BAD){
-        return ERR_BAD;
-    }
-    MEM_get_item_m(WPR_texture_ptr,data->textures,index) = SDL_CreateTextureFromSurface(data->renderer,surface);
-    if(MEM_get_item_m(WPR_texture_ptr,data->textures,index) == NULL){
+
+ERR_error WPR_turn_surface_into_texture(WPR_sdl_data* data,SDL_Surface* surface,WPR_texture_ptr* texture){
+    *texture = SDL_CreateTextureFromSurface(data->renderer,surface);
+    if(*texture == NULL){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't turn the surface into a texture: %s",SDL_GetError());
         return ERR_BAD;
     }
     SDL_FreeSurface(surface);
-    *texture_index = index;
     return ERR_GOOD;
 }
 

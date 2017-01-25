@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/error.h
+assert.h
+-
+stdio.h
+-
+stdlib.h
+-
+
+../include/mem.h
+stdlib.h
+-
+utils.h
+../include/utils.h
+error.h
+../include/error.h
+
+../include/utils.h
+stdint.h
+-
+stdio.h
+-
+
+/Users/derek/C/engine/tests/mem_tests.c
+tester.h
+/Users/derek/C/engine/tests/tester.h
+mem.h
+/Users/derek/C/engine/tests/mem.h
+string.h
+-
+
+/Users/derek/C/engine/tests/tester.h
+stdio.h
+-
+

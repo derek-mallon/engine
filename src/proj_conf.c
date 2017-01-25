@@ -11,28 +11,32 @@ PRJ_project_conf PRJ_default_conf(UTI_str project_name){
     UTI_concat(conf.base_path.buff,2,"./",project_name);
     UTI_concat(conf.texture_dir.buff,2,conf.base_path.buff,"/textures");
     UTI_concat(conf.component_dir.buff,2,conf.base_path.buff,"/components");
+    UTI_concat(conf.audio_dir.buff,2,conf.base_path.buff,"/audio");
     UTI_concat(conf.bin_dir.buff,2,conf.base_path.buff,"/bin");
     return conf;
 }
 
 void PRJ_create_proj(PRJ_project_conf* conf){
+   UTI_concat(conf->mem_binary.buff,2,conf->bin_dir.buff,"/main.binary");
+   UTI_concat(conf->self.buff,2,conf->bin_dir.buff,"/proj_conf.binary");
    FIL_mkdir(conf->base_path.buff);
    FIL_mkdir(conf->texture_dir.buff);
    FIL_mkdir(conf->component_dir.buff);
+   FIL_mkdir(conf->audio_dir.buff);
    FIL_mkdir(conf->bin_dir.buff);
 }
 
 void PRJ_create_proj_mem(){
 
 }
-
 /**
  * NOTE: where ever it says runtime it still means the memory is loaded at the beginning of either a scene or the entire game itself.
  * Memory layout is as follows:
+ * 0. Project conf
  * 1. System data
  * -- WPR_system
  * -- IO
- * -- Asset 
+ * -- Assets
  * -- 
  * 2. Asset Data ----> all Editable at runtime but must be loaded and cleaned up at run time.
  * -- Wav files {type: WPR_audio_buff,str path} 
@@ -72,56 +76,104 @@ void PRJ_create_proj_mem(){
  */
 typedef struct PRJ_mem_init_data PRJ_mem_init_data;
 struct PRJ_mem_init_data{
+    PRJ_project_conf conf;
     size_t number_of_textures;
     size_t number_of_audio_files;
+    size_t number_of_components;
+    size_t entity_capacity;
     MEM_heap component_mem_templates;
 };
 
 void PRJ_mem_init(MEM_heap* templates,MEM_heap* data){
-    PRJ_mem_init_data data_ = *(PRJ_mem_init_data*) data;
+    size_t index = MEM_LOC_TOTAL;
+    int i;
+    int j;
+    PRJ_mem_init_data data_ = MEM_get_item_m(PRJ_mem_init_data,data,0);
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_PROJ_CONF) = MEM_create_heap_template(PRJ_project_conf,1);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_WPR_SDL_DATA) = MEM_create_heap_template(WPR_sdl_data,1);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_AST_DATA) = MEM_create_heap_template(AST_data,1);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_AUDIO_DATA) =  MEM_create_heap_template(AST_audio_data,data_.number_of_audio_files);
     MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_TEXTURE_DATA) =  MEM_create_heap_template(AST_texture_data,data_.number_of_textures);
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_ENTITIES) = MEM_create_heap_template_not_type(sizeof(MEM_handle)*data_.number_of_components,data_.entity_capacity,"entities");
+    
+    for(i=0;i<data_.number_of_components;i++){
+        MEM_get_item_m(MEM_heap_template,templates,index) = MEM_create_heap_template(COM_component,1);
+        index++;
+        MEM_get_item_m(MEM_heap_template,templates,index) = MEM_get_item_m_p(COM_component_mem_template,&data_.component_mem_templates,i)->template;
+        index++;
+
+        for(j=0;j<MEM_get_item_m_p(COM_component_mem_template,&data_.component_mem_templates,i)->number_of_messages;j++){
+            MEM_get_item_m(MEM_heap_template,templates,index) = MEM_create_heap_template(LIB_FUNC,1);
+            index++;
+        }
+    }
+
+    ERR_ASSERT(index==templates->capacity,"not enough mem set %lu %lu",index,templates->capacity);
+    MEM_destroy_heap(&data_.component_mem_templates);
 }
-void PRJ_create_proj_binary(PRJ_project_conf* conf){
+void PRJ_create_proj_binary(PRJ_project_conf conf){
 
-    MEM_heap component_lib_paths;
-    MEM_heap component_mem_templates;
+    PRJ_mem_init_data data;
+
+    MEM_heap component_lib_paths,data_heap;
     MEM_heap_manager manager;
+    UTI_buff_stor path_data;
 
-    size_t number_of_components;
-    size_t total_number_of_heaps_needed = MEM_LOC_TOTAL;
+
+    size_t top = MEM_LOC_TOTAL;
     int i;
 
-    number_of_components = FIL_get_number_of_files_in_dir(conf->component_dir.buff);
-    total_number_of_heaps_needed += 2*number_of_components;
+    data.conf = conf;
+    data.number_of_components = FIL_get_number_of_files_in_dir(conf.component_dir.buff);
+    data.number_of_textures = FIL_get_number_of_files_in_dir(conf.texture_dir.buff);
+    data.number_of_audio_files = FIL_get_number_of_files_in_dir(conf.audio_dir.buff);
 
-    MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,number_of_components),&component_lib_paths);
-    MEM_create_heap(MEM_create_heap_template(COM_component_mem_template,number_of_components),&component_mem_templates);
+    top += 2*data.number_of_components;
 
-    FIL_get_all_files(conf->component_dir.buff,&component_lib_paths);
+    //Gets destroyed in this function
+    MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,data.number_of_components),&component_lib_paths);
+    //Gets destroyed in the mem init function
+    MEM_create_heap(MEM_create_heap_template(COM_component_mem_template,data.number_of_components),&data.component_mem_templates);
 
-    for(i=0;i<number_of_components;i++){
+    FIL_get_all_files(conf.component_dir.buff,&component_lib_paths);
 
-        LIB_HANDLE handle = AST_lib_open(MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
+    for(i=0;i<data.number_of_components;i++){
+    
+        UTI_concat(path_data.buff,3,conf.component_dir.buff,"/",MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
+        LIB_HANDLE handle = AST_lib_open(path_data.buff);
         
         size_t (*get_size)(void) = AST_get_func(handle,"get_size");
         size_t (*get_capacity)(void) = AST_get_func(handle,"get_capacity");
         size_t (*get_number_of_messages)(void) = AST_get_func(handle,"get_number_of_messages");
 
-        MEM_get_item_m(COM_component_mem_template,&component_mem_templates,i).template = MEM_create_heap_template_not_type(get_size(),get_capacity(),MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
-        MEM_get_item_m(COM_component_mem_template,&component_mem_templates,i).number_of_messages = get_number_of_messages();
-        total_number_of_heaps_needed += get_number_of_messages();
+        MEM_get_item_m(COM_component_mem_template,&data.component_mem_templates,i).template = MEM_create_heap_template_not_type(get_size(),get_capacity(),MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
+        MEM_get_item_m(COM_component_mem_template,&data.component_mem_templates,i).number_of_messages = get_number_of_messages();
+        top += get_number_of_messages();
 
         AST_lib_close(handle);
     }
 
-    MEM_create_heap_manager("main_mem",total_number_of_heaps_needed,PRJ_mem_init,NULL,&manager);
 
+    //Gets destroyed in mem manager create function
+    MEM_create_heap(MEM_create_heap_template(PRJ_mem_init_data,1),&data_heap);
+    MEM_get_item_m(PRJ_mem_init_data,&data_heap,0) = data;
+    //Gets destroyed when saved
+    MEM_create_heap_manager("main_mem",top,PRJ_mem_init,&data_heap,&manager);
     
-    
-    MEM_destroy_heap(&component_mem_templates);
+    FIL_path binary_path = FIL_create_path(conf.mem_binary.buff,FIL_TYPE_BINARY,FIL_MODE_WRITE | FIL_MODE_OVERWRITE);
+    IO_save_manager_binary(&binary_path,&manager);
     MEM_destroy_heap(&component_lib_paths);
+}
+
+ERR_error PRJ_load_proj_conf(UTI_str path,PRJ_project_conf* conf){
+    FIL_path path_ = FIL_create_path(path,FIL_TYPE_BINARY,FIL_MODE_READ);
+    MEM_heap mem;
+    ERR_error result;
+    if((result = IO_load_heap_binary(&path_,&mem)) != ERR_GOOD){
+        return result;
+    }
+    *conf =  MEM_get_item_m(PRJ_project_conf,&mem,0);
+    MEM_destroy_heap(&mem);
+    return ERR_GOOD;
 }
 

@@ -1,0 +1,9 @@
+/Users/derek/C/engine/cmake/CMakeFiles/rebuild_cache.dir
+/Users/derek/C/engine/cmake/CMakeFiles/test.dir
+/Users/derek/C/engine/cmake/CMakeFiles/sdl_wrapper_tests.dir
+/Users/derek/C/engine/cmake/CMakeFiles/io_tests.dir
+/Users/derek/C/engine/cmake/CMakeFiles/file_handling_tests.dir
+/Users/derek/C/engine/cmake/CMakeFiles/mem_tests.dir
+/Users/derek/C/engine/cmake/CMakeFiles/project_creator.dir
+/Users/derek/C/engine/cmake/CMakeFiles/edit_cache.dir
+/Users/derek/C/engine/cmake/CMakeFiles/engine.dir
