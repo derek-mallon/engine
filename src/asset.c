@@ -3,8 +3,6 @@
 #include "dlfcn.h"
 
 
-
-
 LIB_HANDLE AST_lib_open(UTI_str str){
     LIB_HANDLE handle = dlopen(str,RTLD_LAZY);
     ERR_ASSERT(handle != NULL,"could not open lib at %s",str);
@@ -16,7 +14,7 @@ void AST_lib_close(LIB_HANDLE handle){
 }
 
 
-AST_FUNC AST_get_func(LIB_HANDLE handle,UTI_str str){
+LIB_FUNC AST_get_func(LIB_HANDLE handle,UTI_str str){
     return dlsym(handle,str);
 }
 

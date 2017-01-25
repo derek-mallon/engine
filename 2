@@ -9,7 +9,7 @@ typedef struct AST_data AST_data;
 typedef struct AST_audio_data AST_audio_data;
 typedef struct AST_texture_data AST_texture_data;
 
-typedef uint8_t* AST_audio_buff;
+typedef void* AST_audio_buff;
 
 struct AST_audio_data{
     UTI_buff_stor path;
@@ -21,7 +21,7 @@ struct AST_audio_data{
 struct AST_texture_data{
     UTI_buff_stor path;
     SDL_Texture* texture_buff;
-};
+}
 
 struct AST_data{
     MEM_heap* texture_data;

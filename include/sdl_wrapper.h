@@ -16,8 +16,8 @@ typedef struct WPR_sdl_data WPR_sdl_data;
 typedef struct WPR_sdl_layer_output WPR_sdl_layer_output;
 typedef struct WPR_init_sdl_data WPR_init_sdl_data;
 typedef struct WPR_color WPR_color;
-typedef  SDL_Texture* WPR_texture_ptr;
 typedef enum WPR_status WPR_status;
+typedef  SDL_Texture* WPR_texture_ptr;
 
 
 enum WPR_status{

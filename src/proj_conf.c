@@ -3,6 +3,8 @@
 #include "io.h"
 #include "term.h"
 #include "asset.h"
+#include "component.h"
+#include "sdl_wrapper.h"
 
 PRJ_project_conf PRJ_default_conf(UTI_str project_name){
     PRJ_project_conf conf;
@@ -68,49 +70,58 @@ void PRJ_create_proj_mem(){
  * 6. Using the known number of components create the entity arrays.
  * 6. Save the mem_manager to disk.
  */
+typedef struct PRJ_mem_init_data PRJ_mem_init_data;
+struct PRJ_mem_init_data{
+    size_t number_of_textures;
+    size_t number_of_audio_files;
+    MEM_heap component_mem_templates;
+};
+
+void PRJ_mem_init(MEM_heap* templates,MEM_heap* data){
+    PRJ_mem_init_data data_ = *(PRJ_mem_init_data*) data;
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_WPR_SDL_DATA) = MEM_create_heap_template(WPR_sdl_data,1);
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_AST_DATA) = MEM_create_heap_template(AST_data,1);
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_AUDIO_DATA) =  MEM_create_heap_template(AST_audio_data,data_.number_of_audio_files);
+    MEM_get_item_m(MEM_heap_template,templates,MEM_LOC_TEXTURE_DATA) =  MEM_create_heap_template(AST_texture_data,data_.number_of_textures);
+}
 void PRJ_create_proj_binary(PRJ_project_conf* conf){
-    UTI_buff_stor base_data;
-    UTI_concat(base_data.buff,2,conf->base_path.buff,"/",PRJ_ROOT_DATA);
-    FIL_path root_path = FIL_create_path(base_data.buff,FIL_TYPE_BINARY,FIL_MODE_WRITE | FIL_MODE_OVERWRITE);
-    MEM_heap conf_mem;
-    MEM_create_heap(MEM_create_heap_template(PRJ_project_conf,1),&conf_mem);
-    MEM_get_item_m(PRJ_project_conf,&conf_mem,0) = *conf;
-    IO_save_heap_binary(&root_path,&conf_mem);
-    MEM_destroy_heap(&conf_mem);
 
-    //Search for all of the component mem requirements
-    MEM_heap component_templates;
-    size_t number_of_components = FIL_get_number_of_files_in_dir(conf->component_dir.buff);
+    MEM_heap component_lib_paths;
+    MEM_heap component_mem_templates;
+    MEM_heap_manager manager;
+
+    size_t number_of_components;
+    size_t total_number_of_heaps_needed = MEM_LOC_TOTAL;
     int i;
-    MEM_heap component_libs;
-    MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,number_of_components),&component_libs);
-    FIL_get_all_files(conf->component_dir.buff,&component_libs);
+
+    number_of_components = FIL_get_number_of_files_in_dir(conf->component_dir.buff);
+    total_number_of_heaps_needed += 2*number_of_components;
+
+    MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,number_of_components),&component_lib_paths);
+    MEM_create_heap(MEM_create_heap_template(COM_component_mem_template,number_of_components),&component_mem_templates);
+
+    FIL_get_all_files(conf->component_dir.buff,&component_lib_paths);
+
     for(i=0;i<number_of_components;i++){
-       LIB_HANDLE handle =AST_lib_open(MEM_get_item_m(UTI_buff_stor,&component_libs,i).buff);
 
-       size_t (*get_size)(void) = AST_get_func(handle,"get_size");
-       size_t comp_size = get_size();
+        LIB_HANDLE handle = AST_lib_open(MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
+        
+        size_t (*get_size)(void) = AST_get_func(handle,"get_size");
+        size_t (*get_capacity)(void) = AST_get_func(handle,"get_capacity");
+        size_t (*get_number_of_messages)(void) = AST_get_func(handle,"get_number_of_messages");
 
-       size_t (*get_capacity)(void) = AST_get_func(handle,"get_capacity");
-       size_t comp_capacity = get_capacity();
+        MEM_get_item_m(COM_component_mem_template,&component_mem_templates,i).template = MEM_create_heap_template_not_type(get_size(),get_capacity(),MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
+        MEM_get_item_m(COM_component_mem_template,&component_mem_templates,i).number_of_messages = get_number_of_messages();
+        total_number_of_heaps_needed += get_number_of_messages();
 
-       size_t (*get_number_of_messages)(void) = AST_get_func(handle,"get_number_of_messages");
-       number_of_components += get_number_of_messages();
-
-
-       AST_lib_close(handle);
-
+        AST_lib_close(handle);
     }
 
-    UTI_buff_stor std_templates_path;
-    UTI_concat(std_templates_path.buff,2,conf->base_path.buff,"/mem.data");
-    ERR_ASSERT(FIL_file_exits(std_templates_path.buff),"this file does not exist %s",std_templates_path.buff);
-    FIL_path path = FIL_create_path(std_templates_path.buff,FIL_TYPE_BINARY,FIL_MODE_READ);
-    MEM_heap std_templates;
-    IO_load_heap_binary(&path,&std_templates);
+    MEM_create_heap_manager("main_mem",total_number_of_heaps_needed,PRJ_mem_init,NULL,&manager);
 
-
-    MEM_destroy_heap(&std_templates);
-    MEM_destroy_heap(&component_libs);
+    
+    
+    MEM_destroy_heap(&component_mem_templates);
+    MEM_destroy_heap(&component_lib_paths);
 }
 
