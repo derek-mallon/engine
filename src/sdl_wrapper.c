@@ -1,6 +1,7 @@
 #include "sdl_wrapper.h"
 #include "utils.h"
 #include "all.h"
+#include "asset.h"
 
 #define DELTA_SAMPLE_SIZE 60
 

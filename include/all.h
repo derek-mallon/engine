@@ -6,6 +6,7 @@
     #if defined(_WIN32)
         #define WIN
     #endif
+
 #define FOREACH_MEM_LOC(MEM_LOC) \
         MEM_LOC(MEM_LOC_INFO)\
         MEM_LOC(MEM_LOC_WPR_SDL_DATA)\
@@ -18,6 +19,15 @@
 
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
+
+#define UTI_DEFAULT_NAME_SIZE 50
+#include <stdlib.h>
+
+typedef struct UTI_buff_stor UTI_buff_stor;
+
+struct UTI_buff_stor{
+    char buff[UTI_DEFAULT_NAME_SIZE];
+};
 
 enum MEMORY_LOC {
     FOREACH_MEM_LOC(GENERATE_ENUM)
@@ -43,6 +53,7 @@ struct ALL_info{
     size_t number_of_textures;
     size_t number_of_components;
     size_t number_of_audio_files;
+    size_t entity_capacity;
 };
 
 #endif

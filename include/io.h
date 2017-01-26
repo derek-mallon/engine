@@ -10,6 +10,7 @@ enum IO_status{
 };
 void IO_init();
 void IO_close();
+
 ERR_error IO_load_texture_from_image(UTI_str path,SDL_Surface* surface);
 ERR_error IO_load_heap_binary(FIL_path*,MEM_heap* heap);
 ERR_error IO_save_heap_binary(FIL_path*,MEM_heap* heap);

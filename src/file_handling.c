@@ -169,7 +169,7 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
 
 ERR_error FIL_walk_over_all_files_in_dir(UTI_str dir,void(*walk)(UTI_str,void*),void* data){
 #ifdef UNIX
-    ERR_ASSERT(FIL_file_is_dir(p),"file %s is not a directory",p);
+    ERR_ASSERT(FIL_file_is_dir(dir),"file %s is not a directory",dir);
     DIR* directory;
     struct dirent *entry;
     if((directory = opendir(dir)) != NULL){

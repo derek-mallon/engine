@@ -36,7 +36,16 @@ static void find_all_textures(AST_data* data){
     walk_struct_data data_ =  {data,0};
     FIL_walk_over_all_files_in_dir(data->info->texture_dir.buff,walk_texture_dir,(void*)&data_);
 }
+
+static void find_all_audio_files(AST_data* data){
+    walk_struct_data data_ =  {data,0};
+    FIL_walk_over_all_files_in_dir(data->info->audio_dir.buff,walk_texture_dir,(void*)&data_);
+}
+
 static void AST_load_(AST_data* data){
+    int i;
+    for(i=0;i<data->info->number_of_textures;i++){
+    }
 }
 
 void AST_init(MEM_heap_manager* manager){
@@ -52,6 +61,7 @@ void AST_init(MEM_heap_manager* manager){
     data->info =  MEM_get_item_m_p(ALL_info,MEM_get_heap(manager,MEM_LOC_INFO),0);
 
     find_all_textures(data);
+    find_all_audio_files(data);
     AST_load_(data);
     AST_STATUS = AST_READY;
 

@@ -127,6 +127,6 @@ void MEM_init(MEM_heap_manager* heap_manager);
 
 #define MEM_get_item_m_p(type,heap,i) ((type*)&(heap)->ptr[i*((heap)->size_of_object)])
 
-#define MEM_get_heap(m,i) &m->heaps[i]
+#define MEM_get_heap(m,i) &(m)->heaps[i]
 
 #endif
