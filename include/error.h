@@ -14,6 +14,18 @@ enum ERR_error{
     ERR_MEM,
 };
 
+#ifndef DEBUG
+#define ERR_HANDLE(exp)  if((result = exp) != ERR_GOOD){return result;}
+#endif
+
+#ifdef DEBUG
+#define ERR_HANDLE(exp)  if((result = exp) != ERR_GOOD){\
+    printf("ERROR CAUGHT IN FILE:%s  FUNC:%s LINE:%d \n",__FILE__,__func__,__LINE__);\
+    return result;\
+}
+
+#endif
+
 #ifdef DEBUG
 #define ERR_ASSERT(exp,fmt,...) \
 do{\

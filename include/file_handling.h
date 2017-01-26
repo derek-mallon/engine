@@ -63,9 +63,9 @@ size_t FIL_get_number_of_dirs_in_dir(UTI_str p);
 
 ERR_error FIL_get_all_dirs(UTI_str p,MEM_heap* heap_of_paths);
 
-ERR_error FIL_read_binary(FIL_path* path,MEM_handle handle);
+ERR_error FIL_read_binary(FIL_path* path,MEM_heap* heap);
 
-ERR_error FIL_write_binary(FIL_path* path,MEM_handle handle);
+ERR_error FIL_write_binary(FIL_path* path,MEM_heap* heap);
 
 ERR_error FIL_walk_over_all_files_in_dir(UTI_str dir,void(*walk)(UTI_str,void*),void* data);
 #endif

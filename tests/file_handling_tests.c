@@ -38,8 +38,7 @@ TESTS
         int i;
         uint8_t found = 0;
         for(i=0;i<heap.top;i++){
-            MEM_handle handle = MEM_create_handle_from_heap(&heap,i);
-            if(strcmp(MEM_get_item(UTI_buff_stor,handle).buff,"file_handling_tests") == 0){
+            if(strcmp(MEM_get_item_m(UTI_buff_stor,&heap,i).buff,"file_handling_tests") == 0){
                 found = 1;
             }
         }
@@ -55,14 +54,14 @@ TESTS
         MEM_create_heap(MEM_create_heap_template_not_type(sizeof(buff),1,"test mem"),&mem_heap);
         UTI_concat(MEM_get_item_m_p(char,&mem_heap,0),1,"test words");
         FIL_file_open(&path);
-        FIL_write_binary(&path,MEM_create_handle_from_heap(&mem_heap,0));
+        FIL_write_binary(&path,&mem_heap);
         FIL_file_close(&path);
         MEM_destroy_heap(&mem_heap);
 
         path = FIL_create_path("test.tmp2",FIL_TYPE_BINARY,FIL_MODE_READ);
         FIL_file_open(&path);
         MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(&path),1,"test mem"),&mem_heap);
-        FIL_read_binary(&path,MEM_create_handle_from_heap(&mem_heap,0));
+        FIL_read_binary(&path,&mem_heap);
         ASSERT(strcmp(MEM_get_item_m_p(char,&mem_heap,0),"test words") == 0);
     UNIT_TEST_END
     UNIT_TEST_START("check if dir")

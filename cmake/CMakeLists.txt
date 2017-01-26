@@ -15,7 +15,7 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_Image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-set(ENGINE_SOURCES ../src/asset.c ../src/component.c ../src/engine.c ../src/file_handling.c ../src/geometry.c ../src/io.c ../src/mem.c ../src/module_startup_shutdown.c ../src/physics.c ../src/render.c ../src/sdl_wrapper.c ../src/term.c ../src/utils.c ../src/hashtable.c)
+set(ENGINE_SOURCES ../src/asset.c ../src/component.c ../src/engine.c ../src/file_handling.c ../src/geometry.c ../src/io.c ../src/mem.c ../src/module_startup_shutdown.c ../src/physics.c ../src/render.c ../src/sdl_wrapper.c ../src/term.c ../src/utils.c ../src/hashtable.c ../src/str.c)
 
 include_directories("${PROJECT_SOURCE_DIR}/../include" ${SDL2_INCLUDE_DIR} ${SDL_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 

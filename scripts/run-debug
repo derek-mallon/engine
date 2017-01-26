@@ -1,4 +1,2 @@
 #!/bin/bash
-./build-debug
-cd ../bin
-lldb -S ../scripts/lldb-script
+./build-debug && cd ../bin && lldb -S ../scripts/lldb-script

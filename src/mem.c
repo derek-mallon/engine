@@ -61,9 +61,7 @@ ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func
 
     ERR_error result;
     for(i=0;i<count;i++){
-        if((result = MEM_create_heap(MEM_get_item_m(MEM_heap_template,&templates,i),&heaps[i])) != ERR_GOOD){
-            return result;
-        }
+        ERR_HANDLE(MEM_create_heap(MEM_get_item_m(MEM_heap_template,&templates,i),&heaps[i]));
     }
 
     MEM_destroy_heap(&templates);
@@ -81,9 +79,7 @@ ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager){
     int i;
     ERR_error result;
     for(i=0;i<manager->number_of_heaps;i++){
-        if((result = MEM_destroy_heap(&manager->heaps[i])) != ERR_GOOD){
-           return result;
-        }
+        ERR_HANDLE(MEM_destroy_heap(&manager->heaps[i]));
     }
     free(manager->heaps);
     manager->number_of_heaps = 0;
@@ -118,8 +114,8 @@ size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager){
     }
     return size;
 }
-void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
-    void* data = &handle.heap->ptr[handle.index];
+void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_heap* binary){
+    void* data = binary->ptr;
     *(size_t*)(&(data)[*pos]) = heap->size_of_object;
     step_type(*pos,size_t);
     *(size_t*)(&(data)[*pos]) = heap->capacity;
@@ -134,8 +130,8 @@ void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
     MEM_destroy_heap(heap);
 }
 //Does not free the heap used internally
-static void MEM_serialize_heap_(MEM_heap* heap,size_t* pos,MEM_handle handle){
-    void* data = &handle.heap->ptr[handle.index];
+static void MEM_serialize_heap_(MEM_heap* heap,size_t* pos,MEM_heap* binary){
+    void* data = binary->ptr;
     *(size_t*)(&(data)[*pos]) = heap->size_of_object;
     step_type(*pos,size_t);
     *(size_t*)(&(data)[*pos]) = heap->capacity;
@@ -149,22 +145,22 @@ static void MEM_serialize_heap_(MEM_heap* heap,size_t* pos,MEM_handle handle){
     step_array(*pos,heap->size_of_object,heap->capacity);
 }
 
-void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle){
-    void* data = &handle.heap->ptr[handle.index];
+void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_heap* binary){
+    void* data = binary->ptr;
     int i;
-    *(size_t*)(&(data)[0]) = manager->number_of_heaps;
+    *(size_t*)(&(data)[*pos]) = manager->number_of_heaps;
     step_type(*pos,size_t);
-    strcpy((char*)(&(data)[sizeof(size_t)]),manager->name);
+    strcpy((char*)(&(data)[*pos]),manager->name);
     step_type(*pos,manager->name);
 
     for(i=0;i<manager->number_of_heaps;i++){
-        MEM_serialize_heap_(&manager->heaps[i],pos,handle);
+        MEM_serialize_heap_(&manager->heaps[i],pos,binary);
     }
     MEM_destroy_heap_manager(manager);
 }
 
-ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
-    void* data = &handle.heap->ptr[handle.index];
+ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_heap* binary){
+    void* data = binary->ptr;
     heap->size_of_object = *(size_t*)(&data[*pos]);
     step_type(*pos,size_t);
     heap->capacity = *(size_t*)(&data[*pos]);
@@ -184,8 +180,8 @@ ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle){
 
     return ERR_GOOD;
 }
-ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle){
-    void* data = &handle.heap->ptr[handle.index];
+ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_heap* binary){
+    void* data = binary;
     manager->number_of_heaps = *(size_t*)&data[*pos];
     step_type(*pos,size_t);
     strcpy(manager->name,(char*)&data[*pos]);
@@ -196,20 +192,22 @@ ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM
         return ERR_MEM;
     }
     int i;
+    ERR_error result;
     for(i=0;i<manager->number_of_heaps;i++){
-        MEM_deserialize_heap(&manager->heaps[i],pos,handle);
+        ERR_HANDLE(MEM_deserialize_heap(&manager->heaps[i],pos,binary));
     }
     return ERR_GOOD;
 }
-MEM_handle MEM_create_handle_from_manager(MEM_heap_manager* manager,size_t index_of_heap,size_t index){
-    ERR_ASSERT(manager->number_of_heaps > index_of_heap,"heap does not exist at the index %lu",index_of_heap);
-    ERR_ASSERT(manager->heaps[index_of_heap].capacity > index,"item does not exit at the index %lu in the heap",index);
-    MEM_handle handle = {&manager->heaps[index_of_heap],index};
+MEM_handle MEM_create_handle(size_t index_of_heap,size_t index){
+    MEM_handle handle = {index_of_heap,index};
     return handle;
 }
 
-MEM_handle MEM_create_handle_from_heap(MEM_heap* heap,size_t index){
-    ERR_ASSERT(heap->capacity > index,"item does not exist at the index %lu in the heap, capacity is %lu",index,heap->capacity);
-    MEM_handle handle = {heap,index};
-    return handle;
+MEM_heap* MEM_get_heap(MEM_handle handle,MEM_heap_manager* manager){
+    return &manager->heaps[handle.index_of_heap];
 }
+
+MEM_heap* MEM_get_heap_m(MEM_heap_manager* manager,size_t index){
+    return &manager->heaps[index];
+}
+

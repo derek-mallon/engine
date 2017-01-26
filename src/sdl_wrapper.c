@@ -15,8 +15,7 @@ const float IDEAL_UNIT_Y = 100;
 
 
 ERR_error WPR_init_sdl(WPR_init_sdl_data init,MEM_heap_manager* manager){
-    MEM_handle sdl_data_handle= MEM_create_handle_from_manager(manager,MEM_LOC_WPR_SDL_DATA,0);
-    WPR_sdl_data* data = MEM_get_item_p(WPR_sdl_data,sdl_data_handle);
+    WPR_sdl_data* data = MEM_get_item_m_p(WPR_sdl_data,MEM_get_heap_m(manager,MEM_LOC_WPR_SDL_DATA),0);
     int i,j;
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't init SDL: %s",SDL_GetError());
@@ -49,7 +48,7 @@ ERR_error WPR_init_sdl(WPR_init_sdl_data init,MEM_heap_manager* manager){
     data->delta_collection_count = 0;
     data->current_fps = 0;
     data->prev_tick = SDL_GetTicks();
-    data->textures = MEM_get_heap(manager,MEM_LOC_TEXTURE_DATA);
+    data->textures = MEM_get_heap_m(manager,MEM_LOC_TEXTURE_DATA);
     WPR_STATUS = WPR_READY;
     return ERR_GOOD;
 }

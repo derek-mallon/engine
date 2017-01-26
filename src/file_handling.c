@@ -153,7 +153,6 @@ ERR_error FIL_get_all_files(UTI_str p,MEM_heap* heap_of_paths){
             if(!FIL_file_is_dir(entry->d_name)){
                 size_t index;
                 MEM_add_top(heap_of_paths,&index);
-                ERR_error result;
                 UTI_concat(MEM_get_item_m(UTI_buff_stor,heap_of_paths,index).buff,1,entry->d_name);
             }
         }
@@ -231,20 +230,20 @@ ERR_error FIL_get_all_dirs(UTI_str p,MEM_heap* heap_of_paths){
 #endif
 }
 
-ERR_error FIL_read_binary(FIL_path* path,MEM_handle handle){
+ERR_error FIL_read_binary(FIL_path* path,MEM_heap* heap){
     ERR_ASSERT(path->file != NULL,"file with path %s not opened",path->raw);
     ERR_ASSERT(path->mode & FIL_MODE_READ,"file with path %s is not readable, the files mode is %s",path->raw,path->ops);
-    size_t result = fread(MEM_get_item_m_p(void,handle.heap,handle.index),handle.heap->size_of_object,1,path->file);
-    if(result != handle.heap->capacity){
+    size_t result = fread(MEM_get_item_m_p(void,heap,0),heap->size_of_object,1,path->file);
+    if(result != heap->capacity){
         return ERR_BAD;
     }
     return ERR_GOOD;
 }
-ERR_error FIL_write_binary(FIL_path* path,MEM_handle handle){
+ERR_error FIL_write_binary(FIL_path* path,MEM_heap* heap){
     ERR_ASSERT(path->file != NULL,"file with path %s not opened",path->raw);
     ERR_ASSERT(path->mode & FIL_MODE_WRITE,"file with path %s is not writable, the files mode is %s",path->raw,path->ops);
-    size_t result = fwrite(MEM_get_item_m_p(void,handle.heap,handle.index),handle.heap->size_of_object,1,path->file);
-    if(result != handle.heap->capacity){
+    size_t result = fwrite(MEM_get_item_m_p(void,heap,0),heap->size_of_object,1,path->file);
+    if(result != heap->capacity){
         return ERR_BAD;
     }
     return ERR_GOOD;

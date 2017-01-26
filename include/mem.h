@@ -59,7 +59,7 @@ struct MEM_heap_manager{
 };
 
 struct MEM_handle{
-    MEM_heap* heap;
+    size_t index_of_heap;
     size_t index;
 };
 
@@ -97,17 +97,20 @@ size_t MEM_get_heap_binary_size(MEM_heap* heap);
 
 size_t MEM_get_heap_manager_binary_size(MEM_heap_manager* manager);
 
-void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
+void MEM_serialize_heap(MEM_heap* heap,size_t* pos,MEM_heap* binary);
 
-void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,MEM_handle handle);
+void MEM_serialize_heap_manager(MEM_heap_manager* manager,size_t* total_size,MEM_heap* binary);
 
-ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_handle handle);
+ERR_error MEM_deserialize_heap(MEM_heap* heap,size_t* pos,MEM_heap* binary);
 
-ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_handle handle);
+ERR_error MEM_deserialize_heap_manager(MEM_heap_manager* manager,size_t* pos,MEM_heap* binary);
 
-MEM_handle MEM_create_handle_from_manager(MEM_heap_manager* manager,size_t index_of_heap,size_t index);
+MEM_handle MEM_create_handle(size_t index_of_heap,size_t index);
 
-MEM_handle MEM_create_handle_from_heap(MEM_heap* heap,size_t index);
+MEM_heap* MEM_get_heap(MEM_handle handle,MEM_heap_manager* manager);
+
+MEM_heap* MEM_get_heap_m(MEM_heap_manager* manager,size_t index);
+
 
 void MEM_init(MEM_heap_manager* heap_manager);
 
@@ -119,14 +122,15 @@ void MEM_init(MEM_heap_manager* heap_manager);
  * @param i the index which will returned.
  * @return the object (not a copy).
  */
-#define MEM_get_item(type,handle) (*(type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
 
-#define MEM_get_item_p(type,handle) ((type*)&(handle.heap)->ptr[handle.index*((handle.heap)->size_of_object)])
+
+#define MEM_get_item(type,handle,manager) (*(type*)&(MEM_get_heap(handle,manager))->ptr[handle.index*(MEM_get_heap(handle,manager)->size_of_object)])
+
+#define MEM_get_item_p(type,handle,manager) ((type*)&(MEM_get_heap(handle,manager))->ptr[handle.index*((MEM_get_heap(handle,manager))->size_of_object)])
 
 #define MEM_get_item_m(type,heap,i) (*(type*)&(heap)->ptr[i*((heap)->size_of_object)])
 
 #define MEM_get_item_m_p(type,heap,i) ((type*)&(heap)->ptr[i*((heap)->size_of_object)])
 
-#define MEM_get_heap(m,i) &(m)->heaps[i]
 
 #endif

@@ -33,16 +33,10 @@ ERR_error IO_load_manager_binary(FIL_path* path,MEM_heap_manager* manager){
 
     FIL_file_open(path);
     ERR_error result;
-    if((result = MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(path),1,"file mem"),&mem_heap)) != ERR_GOOD){
-        return result;
-    }
-    if((result = FIL_read_binary(path,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
-        return result;
-    }
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(path),1,"file mem"),&mem_heap));
+    ERR_HANDLE(FIL_read_binary(path,&mem_heap));
 
-    if((result = MEM_deserialize_heap_manager(manager,&pos,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
-        return result;
-    }
+    ERR_HANDLE(MEM_deserialize_heap_manager(manager,&pos,&mem_heap));
     MEM_destroy_heap(&mem_heap);
     FIL_file_close(path);
     return ERR_GOOD;
@@ -54,14 +48,12 @@ ERR_error IO_save_manager_binary(FIL_path* path,MEM_heap_manager* manager){
     MEM_heap mem_heap;
     ERR_error result;
 
-    FIL_file_open(path);
-    if((result = MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_manager_binary_size(manager),1,"file mem"),&mem_heap)) != ERR_GOOD){
-        return result;
-    }
-    MEM_serialize_heap_manager(manager,&pos,MEM_create_handle_from_heap(&mem_heap,0));
-    if((result = FIL_write_binary(path,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
-        return result;
-    }
+    ERR_HANDLE(FIL_file_open(path));
+
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_manager_binary_size(manager),1,"file mem"),&mem_heap))
+
+    MEM_serialize_heap_manager(manager,&pos,&mem_heap);
+    ERR_HANDLE(FIL_write_binary(path,&mem_heap));
     FIL_file_close(path);
     return ERR_GOOD;
 }
@@ -72,19 +64,12 @@ ERR_error IO_load_heap_binary(FIL_path* path,MEM_heap* heap){
     MEM_heap mem_heap;
     size_t pos = 0;
 
-    FIL_file_open(path);
     ERR_error result;
-    if((result = MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(path),1,"file mem"),&mem_heap)) != ERR_GOOD){
-        FIL_file_close(path);
-        return result;
-    }
-    if((result = FIL_read_binary(path,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
-        return result;
-    }
-    if((result = MEM_deserialize_heap(heap,&pos,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
-        return result;
-    }
-    MEM_destroy_heap(&mem_heap);
+    ERR_HANDLE(FIL_file_open(path));
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(path),1,"file mem"),&mem_heap));
+    ERR_HANDLE(FIL_read_binary(path,&mem_heap));
+    ERR_HANDLE(MEM_deserialize_heap(heap,&pos,&mem_heap));
+    ERR_HANDLE(MEM_destroy_heap(&mem_heap));
     FIL_file_close(path);
     return ERR_GOOD;
 }
@@ -96,16 +81,11 @@ ERR_error IO_save_heap_binary(FIL_path* path,MEM_heap* heap){
     FIL_file_open(path);
 
     ERR_error result;
-    if((result = MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_binary_size(heap),1,"file mem"),&mem_heap)) != ERR_GOOD){
-        FIL_file_close(path);
-        return result;
-    }
-    MEM_serialize_heap(heap,&pos,MEM_create_handle_from_heap(&mem_heap,0));
-    if((result = FIL_write_binary(path,MEM_create_handle_from_heap(&mem_heap,0))) != ERR_GOOD){
-        return result;
-    }
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_binary_size(heap),1,"file mem"),&mem_heap));
+    MEM_serialize_heap(heap,&pos,&mem_heap);
+    ERR_HANDLE(FIL_write_binary(path,&mem_heap));
     FIL_file_close(path);
-    MEM_destroy_heap(&mem_heap);
+    ERR_HANDLE(MEM_destroy_heap(&mem_heap));
     return ERR_GOOD;
 }
 

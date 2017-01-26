@@ -48,10 +48,7 @@ void PRJ_create_proj_mem(){
  * -- Component 1
  * --- Component Standard data (init update destroy, size, and message number information) {type: COM_component} --------> Editable during run time
  * --- Component Custom data[] (array for all of the components) {type: custom}
- * --- Message 1 --------> Editable during run time {type void * (gets cast at runtime to the correct function pointer also get cleaned up at run time)}
- * --- Message 2 --------> Editable during run time
- * --- ......
- * --- Message n
+ * --- Messages --------> Editable during run time {type void * (gets cast at runtime to the correct function pointer also get cleaned up at run time)}
  * -- Component 2
  * --- Component Standard data (init update destroy, size, and message number information) --------> Editable during run time
  * --- Component Custom data[] (array for all of the components)
@@ -98,11 +95,8 @@ void PRJ_mem_init(MEM_heap* templates,void* data_){
         index++;
         MEM_get_item_m(MEM_heap_template,templates,index) = MEM_get_item_m_p(COM_component_mem_template,&data->component_mem_templates,i)->template;
         index++;
-
-        for(j=0;j<MEM_get_item_m_p(COM_component_mem_template,&data->component_mem_templates,i)->number_of_messages;j++){
-            MEM_get_item_m(MEM_heap_template,templates,index) = MEM_create_heap_template(LIB_FUNC,1);
-            index++;
-        }
+        MEM_get_item_m(MEM_heap_template,templates,index) = MEM_create_heap_template(LIB_FUNC,MEM_get_item_m_p(COM_component_mem_template,&data->component_mem_templates,i)->number_of_messages);
+        index++;
     }
 
     ERR_ASSERT(index==templates->capacity,"not enough mem set %lu %lu",index,templates->capacity);
@@ -125,7 +119,7 @@ void PRJ_create_proj_binary(ALL_info conf){
     data.conf.number_of_textures = FIL_get_number_of_files_in_dir(conf.texture_dir.buff);
     data.conf.number_of_audio_files = FIL_get_number_of_files_in_dir(conf.audio_dir.buff);
 
-    top += 2*data.conf.number_of_components;
+    top += 3*data.conf.number_of_components;
 
     //Gets destroyed in this function
     MEM_create_heap(MEM_create_heap_template(UTI_buff_stor,data.conf.number_of_components),&component_lib_paths);
@@ -145,7 +139,6 @@ void PRJ_create_proj_binary(ALL_info conf){
 
         MEM_get_item_m(COM_component_mem_template,&data.component_mem_templates,i).template = MEM_create_heap_template_not_type(get_size(),get_capacity(),MEM_get_item_m(UTI_buff_stor,&component_lib_paths,i).buff);
         MEM_get_item_m(COM_component_mem_template,&data.component_mem_templates,i).number_of_messages = get_number_of_messages();
-        top += get_number_of_messages();
 
         AST_lib_close(handle);
     }
@@ -157,7 +150,7 @@ void PRJ_create_proj_binary(ALL_info conf){
     
     
     FIL_path binary_path = FIL_create_path(conf.mem_binary.buff,FIL_TYPE_BINARY,FIL_MODE_WRITE | FIL_MODE_OVERWRITE);
-    MEM_get_item_m(ALL_info,MEM_get_heap(&manager,MEM_LOC_INFO),0) = data.conf;
+    MEM_get_item_m(ALL_info,MEM_get_heap_m(&manager,MEM_LOC_INFO),0) = data.conf;
     IO_save_manager_binary(&binary_path,&manager);
     MEM_destroy_heap(&component_lib_paths);
 }
