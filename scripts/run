@@ -1,0 +1,4 @@
+#!/bin/bash
+cd ../bin
+./project_creator $1 $0
+

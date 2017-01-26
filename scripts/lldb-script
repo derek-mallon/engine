@@ -1,0 +1,4 @@
+file project_creator
+breakpoint set --name main
+run --build ./test/bin/proj_conf.binary
+
