@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "all.h"
 #include "asset.h"
+#include <SDL2/SDL_image.h>
 
 #define DELTA_SAMPLE_SIZE 60
 
@@ -31,6 +32,10 @@ ERR_error WPR_init_sdl(WPR_init_sdl_data init,MEM_heap_manager* manager){
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't create a renderer: %s",SDL_GetError());
         return ERR_BAD;
     }
+
+    ERR_ASSERT(WPR_get_status() == WPR_READY,"SDL wrapper not inited");
+    int result = IMG_Init(IMG_INIT_PNG);
+    ERR_ASSERT((result == IMG_INIT_PNG),"Couldn't init SDL_image: %s",IMG_GetError());
     
     data->screen_width = init.screen_width;
     data->screen_height = init.screen_height;
@@ -55,11 +60,12 @@ ERR_error WPR_init_sdl(WPR_init_sdl_data init,MEM_heap_manager* manager){
 WPR_sdl_layer_output WPR_input_loop(WPR_sdl_data* data){
     WPR_sdl_layer_output output;
     output.event_buff_size = 0;
-    while(SDL_PollEvent(&data->event) &&output.event_buff_size < EVENT_BUFF_SIZE){
-        if(data->event.type == SDL_QUIT){
+    SDL_Event event;
+    while(SDL_PollEvent(&event) &&output.event_buff_size < EVENT_BUFF_SIZE){
+        if(event.type == SDL_QUIT){
             data->running = 0;
         }
-        output.current_event_buff[output.event_buff_size] = data->event;
+        //output.current_event_buff[output.event_buff_size] = dataevent;
         output.event_buff_size++; 
     }
     SDL_GetMouseState(&output.mouse_x,&output.mouse_y);
@@ -153,23 +159,13 @@ float WPR_get_fps(WPR_sdl_data* data){
     return data->current_fps;
 }
 
-
-ERR_error WPR_turn_surface_into_texture(WPR_sdl_data* data,SDL_Surface* surface,WPR_texture_ptr* texture){
-    *texture = SDL_CreateTextureFromSurface(data->renderer,surface);
-    if(*texture == NULL){
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't turn the surface into a texture: %s",SDL_GetError());
-        return ERR_BAD;
-    }
-    SDL_FreeSurface(surface);
-    return ERR_GOOD;
-}
-
 ERR_error WPR_shutdown(WPR_sdl_data* data){
     ERR_ASSERT(AST_get_status() == AST_CLOSED,"assets not closed yet");
     SDL_DestroyRenderer(data->renderer);
     SDL_DestroyWindow(data->window);
     data->renderer = NULL;
     data->window = NULL;
+    IMG_Quit();
     SDL_Quit();
     WPR_STATUS = WPR_CLOSED;
     return ERR_GOOD;
@@ -179,3 +175,18 @@ WPR_status WPR_get_status(){
     return WPR_STATUS;
 }
 
+ERR_error WPR_load_texture_from_image(const char* path,WPR_sdl_data* data,WPR_texture_ptr* texture){
+    SDL_Surface* surface;
+    surface= IMG_Load(path);
+    if(!surface){
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't load the image at %s: %s",path,SDL_GetError());
+        return ERR_BAD;
+    }
+    *texture = SDL_CreateTextureFromSurface(data->renderer,surface);
+    SDL_FreeSurface(surface);
+    if(*texture == NULL){
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"Couldn't turn the surface into a texture: %s",SDL_GetError());
+        return ERR_BAD;
+    }
+    return ERR_GOOD;
+}

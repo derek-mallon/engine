@@ -3,7 +3,5 @@
 #include "sdl_wrapper.h"
 #include <stdint.h>
 
-//sprite create_sprite(animation* animations,size_t number_of_animations);
-
-//void destroy_sprite(sprite* sprite);
+void ENG_game_loop(MEM_heap_manager* manager);
 #endif

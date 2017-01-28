@@ -3,7 +3,7 @@
 #include "mem.h"
 #include "utils.h"
 
-ERR_error startup(MEM_heap_manager* manager,UTI_str);
+ERR_error startup(MEM_heap_manager* manager,const char* path);
 
 void shutdown(MEM_heap_manager* manager);
 

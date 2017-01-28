@@ -23,11 +23,7 @@
 #define UTI_DEFAULT_NAME_SIZE 50
 #include <stdlib.h>
 
-typedef struct UTI_buff_stor UTI_buff_stor;
 
-struct UTI_buff_stor{
-    char buff[UTI_DEFAULT_NAME_SIZE];
-};
 
 enum MEMORY_LOC {
     FOREACH_MEM_LOC(GENERATE_ENUM)
@@ -40,20 +36,5 @@ static const char *MEMORY_LOC_STR[] = {
 typedef void* LIB_HANDLE;
 typedef void* LIB_FUNC;
 
-typedef struct ALL_info ALL_info;
-struct ALL_info{
-    UTI_buff_stor project_name;
-    UTI_buff_stor base_path;
-    UTI_buff_stor texture_dir;
-    UTI_buff_stor component_dir;
-    UTI_buff_stor audio_dir;
-    UTI_buff_stor bin_dir;
-    UTI_buff_stor mem_binary;
-    UTI_buff_stor self;
-    size_t number_of_textures;
-    size_t number_of_components;
-    size_t number_of_audio_files;
-    size_t entity_capacity;
-};
 
 #endif

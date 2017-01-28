@@ -1,21 +1,9 @@
 #include "engine.h"
-#include "physics.h"
-#include "render.h"
+#include "mem.h"
 
-/*
-typedef struct entity{
-    sprite* sprite;
-    phys_body* phys_body;
-}entity;
 
-SYSTEM_DEC(entity)
+void ENG_game_loop(MEM_heap_manager* manager){
 
-SYSTEM_DEF(entity)
-
-entity create_entity(){
-    entity output = {NULL,NULL};
-    return output;
 }
-*/
 
 

@@ -1,7 +1,6 @@
 #ifndef SDL_WRAPPER_H
 #define SDL_WRAPPER_H
 #include "mem.h"
-#include <SDL2/Sdl.h>
 #include <stdint.h>
 #include "geometry.h"
 #include "utils.h"
@@ -17,7 +16,10 @@ typedef struct WPR_sdl_layer_output WPR_sdl_layer_output;
 typedef struct WPR_init_sdl_data WPR_init_sdl_data;
 typedef struct WPR_color WPR_color;
 typedef enum WPR_status WPR_status;
-typedef  SDL_Texture* WPR_texture_ptr;
+typedef  void* WPR_texture_ptr;
+typedef  void* WPR_surface_ptr;
+typedef void* WPR_window_ptr;
+typedef void* WPR_render_ptr;
 
 
 enum WPR_status{
@@ -34,9 +36,8 @@ enum WPR_flip{
 };
 
 struct WPR_sdl_data{
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_Event event;
+    WPR_window_ptr window;
+    WPR_surface_ptr renderer;
     uint16_t screen_height;
     uint16_t screen_width;
     float unit_x;
@@ -57,7 +58,7 @@ struct WPR_sdl_data{
 
 //Contains all of the output information
 struct WPR_sdl_layer_output{
-    SDL_Event current_event_buff[EVENT_BUFF_SIZE];
+    size_t current_event_buff[EVENT_BUFF_SIZE];
     size_t event_buff_size;
     uint64_t deltaTime;
     int mouse_x;
@@ -109,9 +110,13 @@ uint32_t WPR_get_delta_time(WPR_sdl_data* data);
 
 float WPR_get_fps(WPR_sdl_data* data);
 
-ERR_error WPR_turn_surface_into_texture(WPR_sdl_data* data,SDL_Surface* surface,WPR_texture_ptr* texture);
 
 ERR_error WPR_shutdown(WPR_sdl_data* data);
 
 WPR_status WPR_get_status();
+
+ERR_error WPR_load_texture_from_image(const char* path,WPR_sdl_data* data,WPR_texture_ptr* texture);
+
+ERR_error WPR_free_texture(WPR_texture_ptr* texture);
+
 #endif

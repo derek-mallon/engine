@@ -66,7 +66,7 @@ struct MEM_handle{
 /**
  * @brief Internal function for creating heap templates, use the macro version.
  */
-MEM_heap_template _MEM_create_heap_template(size_t object_size,size_t capacity,UTI_str name);
+MEM_heap_template _MEM_create_heap_template(size_t object_size,size_t capacity,const char* name);
 
 /**
  * @brief a macro which creates a heap template.
@@ -87,7 +87,7 @@ ERR_error MEM_create_heap(MEM_heap_template template,MEM_heap* result);
 
 ERR_error MEM_destroy_heap(MEM_heap* h);
 
-ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,void*),void* data,MEM_heap_manager* manager);
+ERR_error MEM_create_heap_manager(const char* name,size_t count,void(*heap_init_func)(MEM_heap*,void*),void* data,MEM_heap_manager* manager);
 
 ERR_error MEM_destroy_heap_manager(MEM_heap_manager* manager);
 
@@ -111,8 +111,13 @@ MEM_heap* MEM_get_heap(MEM_handle handle,MEM_heap_manager* manager);
 
 MEM_heap* MEM_get_heap_m(MEM_heap_manager* manager,size_t index);
 
+ERR_error MEM_load_heap_binary(const char*,MEM_heap* heap);
 
-void MEM_init(MEM_heap_manager* heap_manager);
+ERR_error MEM_save_heap_binary(const char*,MEM_heap* heap);
+
+ERR_error MEM_load_manager_binary(const char*,MEM_heap_manager* manager);
+
+ERR_error MEM_save_manager_binary(const char*,MEM_heap_manager* manager);
 
 
 /**

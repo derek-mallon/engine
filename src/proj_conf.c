@@ -1,35 +1,17 @@
 #include "proj_conf.h"
 #include "file_handling.h"
-#include "io.h"
 #include "term.h"
 #include "asset.h"
 #include "component.h"
 #include "sdl_wrapper.h"
 
-ALL_info PRJ_default_conf(UTI_str project_name){
-    ALL_info conf;
-    UTI_concat(conf.base_path.buff,2,"./",project_name);
-    UTI_concat(conf.texture_dir.buff,2,conf.base_path.buff,"/textures");
-    UTI_concat(conf.component_dir.buff,2,conf.base_path.buff,"/components");
-    UTI_concat(conf.audio_dir.buff,2,conf.base_path.buff,"/audio");
-    UTI_concat(conf.bin_dir.buff,2,conf.base_path.buff,"/bin");
-    UTI_concat(conf.project_name.buff,1,project_name);
-    return conf;
+
+void PRJ_create_proj(){
+   FIL_mkdir("textures");
+   FIL_mkdir("audio");
+   FIL_mkdir("prefab");
 }
 
-void PRJ_create_proj(ALL_info* conf){
-   UTI_concat(conf->mem_binary.buff,2,conf->bin_dir.buff,"/main.binary");
-   UTI_concat(conf->self.buff,2,conf->bin_dir.buff,"/proj_conf.binary");
-   FIL_mkdir(conf->base_path.buff);
-   FIL_mkdir(conf->texture_dir.buff);
-   FIL_mkdir(conf->component_dir.buff);
-   FIL_mkdir(conf->audio_dir.buff);
-   FIL_mkdir(conf->bin_dir.buff);
-}
-
-void PRJ_create_proj_mem(){
-
-}
 /**
  * NOTE: where ever it says runtime it still means the memory is loaded at the beginning of either a scene or the entire game itself.
  * Memory layout is as follows:
@@ -72,12 +54,8 @@ void PRJ_create_proj_mem(){
  * 6. Using the known number of components create the entity arrays.
  * 6. Save the mem_manager to disk.
  */
-typedef struct PRJ_mem_init_data PRJ_mem_init_data;
-struct PRJ_mem_init_data{
-    ALL_info conf;
-    MEM_heap component_mem_templates;
-};
 
+/*
 void PRJ_mem_init(MEM_heap* templates,void* data_){
     size_t index = MEM_LOC_TOTAL;
     int i;
@@ -154,16 +132,16 @@ void PRJ_create_proj_binary(ALL_info conf){
     IO_save_manager_binary(&binary_path,&manager);
     MEM_destroy_heap(&component_lib_paths);
 }
-
-ERR_error PRJ_load_proj_conf(UTI_str path,ALL_info* conf){
-    FIL_path path_ = FIL_create_path(path,FIL_TYPE_BINARY,FIL_MODE_READ);
+*/
+/*
+ERR_error PRJ_load_proj_conf(const char* path,ALL_info* conf){
     MEM_heap mem;
     ERR_error result;
-    if((result = IO_load_heap_binary(&path_,&mem)) != ERR_GOOD){
+    if((result = MEM_load_heap_binary(path,&mem)) != ERR_GOOD){
         return result;
     }
     *conf =  MEM_get_item_m(ALL_info,&mem,0);
     MEM_destroy_heap(&mem);
     return ERR_GOOD;
 }
-
+*/

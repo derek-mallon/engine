@@ -15,9 +15,9 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_Image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-set(ENGINE_SOURCES ../src/asset.c ../src/component.c ../src/engine.c ../src/file_handling.c ../src/geometry.c ../src/io.c ../src/mem.c ../src/module_startup_shutdown.c ../src/physics.c ../src/render.c ../src/sdl_wrapper.c ../src/term.c ../src/utils.c ../src/hashtable.c ../src/str.c)
+set(ENGINE_SOURCES ../src/asset.c ../src/component.c ../src/engine.c ../src/file_handling.c ../src/geometry.c  ../src/mem.c ../src/module_startup_shutdown.c ../src/physics.c ../src/render.c ../src/sdl_wrapper.c ../src/term.c ../src/utils.c ../src/hashtable.c ../src/str.c)
 
-include_directories("${PROJECT_SOURCE_DIR}/../include" ${SDL2_INCLUDE_DIR} ${SDL_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
+include_directories("${PROJECT_SOURCE_DIR}/../include" "${PROJECT_SOURCE_DIR}/../components" ${SDL2_INCLUDE_DIR} ${SDL_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 
 add_library(engine ${ENGINE_SOURCES})
 
@@ -44,14 +44,6 @@ add_executable(mem_tests ../tests/mem_tests.c)
 target_link_libraries(mem_tests engine)
 
 add_test(MEM_TESTS ../bin/mem_tests)
-
-include_directories("${PROJECT_SOURCE_DIR}/../include")
-
-add_executable(io_tests ../tests/io_tests.c)
-
-target_link_libraries(io_tests engine)
-
-add_test(IO_TESTS ../bin/io_tests)
 
 include_directories("${PROJECT_SOURCE_DIR}/../include")
 

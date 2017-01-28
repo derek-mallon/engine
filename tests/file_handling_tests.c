@@ -2,13 +2,15 @@
 #include "file_handling.h"
 #include <string.h>
 #include "mem.h"
+TESTS
+END_TESTS
+/*
 FIL_path path;
 ENVIROMENT_SETUP{
 }
 ENVIROMENT_CLEANUP{
 }
 
-TESTS
     UNIT_TEST_START("create path")
         path = FIL_create_path("test.txt",FIL_TYPE_TEXT,FIL_MODE_WRITE);
         ASSERT(strcmp(path.raw,"test.txt") == 0);
@@ -71,4 +73,4 @@ TESTS
         ASSERT(!FIL_file_is_dir(path.raw));
     UNIT_TEST_END
 END_TESTS
-
+*/

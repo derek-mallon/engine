@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-void UTI_concat(UTI_buff buff,size_t count,...){
+void UTI_concat(char* buff,size_t count,...){
     va_list ap;
     va_start(ap,count);
     int i;

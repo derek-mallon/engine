@@ -19,35 +19,33 @@ enum AST_status{
 };
 
 struct AST_audio_data{
-    UTI_buff_stor path;
     size_t wav_length;
     AST_audio_buff wav_buff;
-    SDL_AudioSpec wav_spec;
 };
 
 struct AST_texture_data{
-    UTI_buff_stor path;
-    SDL_Texture* texture_buff;
+    WPR_texture_ptr texture_buff;
 };
 
 struct AST_data{
     MEM_heap* texture_data;
     MEM_heap* audio_data;
     WPR_sdl_data* sdl_data;
-    ALL_info* info;
 };
 
-LIB_HANDLE AST_lib_open(UTI_str str);
+LIB_HANDLE AST_lib_open(const char* str);
 
-LIB_FUNC AST_get_func(LIB_HANDLE handle,UTI_str str);
+LIB_FUNC AST_get_func(LIB_HANDLE handle,const char* str);
 
 void AST_lib_close(LIB_HANDLE handle);
 
-void AST_init(MEM_heap_manager* manager);
+ERR_error AST_init(MEM_heap_manager* manager);
 
 void AST_load(MEM_heap_manager* manager);
 void AST_shudown(MEM_heap_manager* manager);
 
 AST_status AST_get_status();
+
+ERR_error AST_load_texture(AST_data* data,AST_texture_data* texture,const char* path);
 
 #endif

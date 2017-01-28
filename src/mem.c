@@ -26,7 +26,7 @@ ERR_error MEM_create_heap(MEM_heap_template template,MEM_heap* result){
     strcpy(result->name,template.name);
     return ERR_GOOD;
 }
-MEM_heap_template _MEM_create_heap_template(size_t object_size,size_t capacity,UTI_str name){
+MEM_heap_template _MEM_create_heap_template(size_t object_size,size_t capacity,const char* name){
     MEM_heap_template result = {object_size,capacity};
     strcpy(result.name,name);
     return result;
@@ -44,7 +44,7 @@ ERR_error MEM_destroy_heap(MEM_heap* h){
     return ERR_GOOD;
 }
 
-ERR_error MEM_create_heap_manager(UTI_str name,size_t count,void(*heap_init_func)(MEM_heap*,void*),void* init_data,MEM_heap_manager* manager){
+ERR_error MEM_create_heap_manager(const char* name,size_t count,void(*heap_init_func)(MEM_heap*,void*),void* init_data,MEM_heap_manager* manager){
 
     FILE *data_file,*template_info_file,*template_data_file,*data,*alive_table;
     char buff[UTI_DEFAULT_NAME_SIZE];
@@ -211,3 +211,57 @@ MEM_heap* MEM_get_heap_m(MEM_heap_manager* manager,size_t index){
     return &manager->heaps[index];
 }
 
+ERR_error MEM_load_manager_binary(const char* path,MEM_heap_manager* manager){
+
+    size_t pos = 0;
+    MEM_heap mem_heap;
+
+    ERR_error result;
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(path),1,"file mem"),&mem_heap));
+    ERR_HANDLE(FIL_read_binary(path,mem_heap.ptr,mem_heap.size_of_object));
+
+    ERR_HANDLE(MEM_deserialize_heap_manager(manager,&pos,&mem_heap));
+    MEM_destroy_heap(&mem_heap);
+    return ERR_GOOD;
+}
+
+ERR_error MEM_save_manager_binary(const char* path,MEM_heap_manager* manager){
+
+    size_t pos = 0;
+    MEM_heap mem_heap;
+    ERR_error result;
+
+
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_manager_binary_size(manager),1,"file mem"),&mem_heap))
+
+    MEM_serialize_heap_manager(manager,&pos,&mem_heap);
+    ERR_HANDLE(FIL_write_binary(path,mem_heap.ptr,mem_heap.size_of_object));
+    ERR_HANDLE(MEM_destroy_heap(&mem_heap));
+    return ERR_GOOD;
+}
+
+ERR_error MEM_load_heap_binary(const char* path,MEM_heap* heap){
+
+    MEM_heap mem_heap;
+    size_t pos = 0;
+
+    ERR_error result;
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(FIL_file_size_binary(path),1,"file mem"),&mem_heap));
+
+    ERR_HANDLE(FIL_read_binary(path,mem_heap.ptr,mem_heap.size_of_object));
+    ERR_HANDLE(MEM_deserialize_heap(heap,&pos,&mem_heap));
+    ERR_HANDLE(MEM_destroy_heap(&mem_heap));
+    return ERR_GOOD;
+}
+ERR_error MEM_save_heap_binary(const char* path,MEM_heap* heap){
+    MEM_heap mem_heap;
+
+    size_t pos = 0;
+
+    ERR_error result;
+    ERR_HANDLE(MEM_create_heap(MEM_create_heap_template_not_type(MEM_get_heap_binary_size(heap),1,"file mem"),&mem_heap));
+    MEM_serialize_heap(heap,&pos,&mem_heap);
+    ERR_HANDLE(FIL_write_binary(path,mem_heap.ptr,mem_heap.size_of_object));
+    ERR_HANDLE(MEM_destroy_heap(&mem_heap));
+    return ERR_GOOD;
+}

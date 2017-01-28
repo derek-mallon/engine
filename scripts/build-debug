@@ -1,4 +1,6 @@
 #!/bin/bash
+./serializer ../components/* 
+mv serialize_output.h ../include/
 cd ../cmake 
 cmake -DCMAKE_BUILD_TYPE=Debug
 make
